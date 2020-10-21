@@ -1,0 +1,109 @@
+package com.epam.esm.entity;
+
+import java.time.LocalDateTime;
+import java.util.Objects;
+import java.util.Set;
+
+public class GiftCertificate {
+    private long id;
+    private String name;
+    private String description;
+    private double price;
+    private LocalDateTime createDate;
+    private LocalDateTime lastUpdateDate;
+    private int duration;
+
+    private Set<Tag> tags;
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public double getPrice() {
+        return price;
+    }
+
+    public void setPrice(double price) {
+        this.price = price;
+    }
+
+    public LocalDateTime getCreateDate() {
+        return createDate;
+    }
+
+    public void setCreateDate(LocalDateTime createDate) {
+        this.createDate = createDate;
+    }
+
+    public LocalDateTime getLastUpdateDate() {
+        return lastUpdateDate;
+    }
+
+    public void setLastUpdateDate(LocalDateTime lastUpdateDate) {
+        this.lastUpdateDate = lastUpdateDate;
+    }
+
+    public int getDuration() {
+        return duration;
+    }
+
+    public void setDuration(int duration) {
+        this.duration = duration;
+    }
+
+    public Set<Tag> getTags() {
+        return tags;
+    }
+
+    public void setTags(Set<Tag> tags) {
+        this.tags = tags;
+    }
+
+    public void addTag(Tag tag) {
+        this.tags.add(tag);
+    }
+
+    public void removeTag(Tag tag) {
+        this.tags.remove(tag);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof GiftCertificate)) return false;
+        GiftCertificate that = (GiftCertificate) o;
+        return id == that.id &&
+                Double.compare(that.price, price) == 0 &&
+                duration == that.duration &&
+                name.equals(that.name) &&
+                description.equals(that.description) &&
+                createDate.equals(that.createDate) &&
+                lastUpdateDate.equals(that.lastUpdateDate) &&
+                tags.equals(that.tags);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, description, price, createDate, lastUpdateDate, duration, tags);
+    }
+}
