@@ -45,7 +45,7 @@ public class AppConfig {
 
     @Bean
     @Autowired
-    public JdbcTemplate getJdbcTemplate(DataSource dataSource){
+    public JdbcTemplate getJdbcTemplate(DataSource dataSource) {
         return new JdbcTemplate(dataSource);
     }
 }
