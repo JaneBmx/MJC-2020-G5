@@ -1,12 +1,14 @@
 package com.epam.esm.config;
 
 import com.mchange.v2.c3p0.ComboPooledDataSource;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 import javax.sql.DataSource;
 import java.beans.PropertyVetoException;
@@ -39,5 +41,11 @@ public class AppConfig {
         securityDataSource.setInitialPoolSize(Integer.parseInt(env.getProperty("connection.pool.initialPoolSize")));
 
         return securityDataSource;
+    }
+
+    @Bean
+    @Autowired
+    public JdbcTemplate getJdbcTemplate(DataSource dataSource){
+        return new JdbcTemplate(dataSource);
     }
 }
