@@ -4,7 +4,7 @@ import com.epam.esm.entity.Tag;
 
 import java.util.List;
 
-public interface TagDAO {
+public interface TagDAO extends DAOInterface<Tag>{
     void create(Tag tag);
 
     List<Tag> findAll();

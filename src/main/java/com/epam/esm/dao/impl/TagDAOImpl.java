@@ -41,6 +41,11 @@ public class TagDAOImpl implements TagDAO {
     }
 
     @Override
+    public List<Tag> findBy(Map<String, String> params) {
+        return null;
+    }
+
+    @Override
     public List<Tag> findBy(String criteria, String value) {
         return null;
     }

@@ -5,7 +5,7 @@ import com.epam.esm.entity.GiftCertificate;
 import java.util.List;
 import java.util.Map;
 
-public interface CertificateDAO {
+public interface CertificateDAO extends DAOInterface<GiftCertificate>{
     void create(GiftCertificate certificate);
 
     List<GiftCertificate> findAll();
