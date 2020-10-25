@@ -6,8 +6,7 @@ import org.springframework.jdbc.core.RowMapper;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import static com.epam.esm.util.Fields.ID;
-import static com.epam.esm.util.Fields.NAME;
+import static com.epam.esm.util.Fields.*;
 
 public class TagMapper implements RowMapper<Tag> {
 
