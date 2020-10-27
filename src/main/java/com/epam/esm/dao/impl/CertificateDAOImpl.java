@@ -3,12 +3,13 @@ package com.epam.esm.dao.impl;
 import com.epam.esm.dao.AbstractDAO;
 import com.epam.esm.dao.mappers.CertificateMapper;
 import com.epam.esm.entity.GiftCertificate;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -17,7 +18,6 @@ import static com.epam.esm.util.Fields.*;
 @Repository
 public class CertificateDAOImpl extends AbstractDAO<GiftCertificate> {
 
-    @Autowired
     public CertificateDAOImpl(NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
         super("select * from gift_certificate",
                 "delete from gift_certificate where id = ?",
@@ -43,13 +43,16 @@ public class CertificateDAOImpl extends AbstractDAO<GiftCertificate> {
 
     @Override
     public void update(GiftCertificate certificate) {
+        Map<String, String> params = new HashMap<>();
+        params.put(ID, String.valueOf(certificate.getId()));
+        GiftCertificate oldCertificate = this.findBy(params).get(0);
         namedParameterJdbcTemplate.getJdbcTemplate().update(UPDATE_QUERY,
-                certificate.getName(),
-                certificate.getDescription(),
-                certificate.getPrice(),
-                certificate.getCreateDate(),
-                certificate.getLastUpdateDate(),
-                certificate.getDuration(),
+                certificate.getName() == null ? oldCertificate.getName() : certificate.getName(),
+                certificate.getDescription() == null ? oldCertificate.getDescription() : certificate.getDescription(),
+                certificate.getPrice() == 0.0 ? oldCertificate.getPrice() : certificate.getPrice(),
+                certificate.getCreateDate() == null ? oldCertificate.getCreateDate() : certificate.getCreateDate(),
+                LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME),
+                certificate.getDuration() == 0 ? oldCertificate.getDuration() : certificate.getDuration(),
                 certificate.getId());
     }
 
