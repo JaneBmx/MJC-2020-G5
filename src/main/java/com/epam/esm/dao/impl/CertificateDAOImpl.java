@@ -1,6 +1,7 @@
 package com.epam.esm.dao.impl;
 
 import com.epam.esm.dao.AbstractDAO;
+import com.epam.esm.dao.CertificateDAO;
 import com.epam.esm.dao.mappers.CertificateMapper;
 import com.epam.esm.entity.GiftCertificate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -16,12 +17,12 @@ import java.util.Map;
 import static com.epam.esm.util.Fields.*;
 
 @Repository
-public class CertificateDAOImpl extends AbstractDAO<GiftCertificate> {
+public class CertificateDAOImpl extends AbstractDAO<GiftCertificate> implements CertificateDAO {
 
     public CertificateDAOImpl(NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
-        super("select * from gift_certificate",
-                "delete from gift_certificate where id = ?",
-                "update gift_certificate set name = ?, description = ?",
+        super("SELECT * FROM gift_certificate",
+                "DELETE FROM gift_certificate WHERE id = ?",
+                "UPDATE gift_certificate SET name = ?, description = ?",
                 namedParameterJdbcTemplate,
                 new SimpleJdbcInsert(namedParameterJdbcTemplate.getJdbcTemplate().getDataSource())
                         .withTableName(CERTIFICATE_TABLE),
@@ -74,7 +75,7 @@ public class CertificateDAOImpl extends AbstractDAO<GiftCertificate> {
         queryParams.addValue("description", "%" + description + "%")
                 .addValue("name", "%" + name + "%");
         if (tagName != null) {
-            query.append("AND tag.id = (select tag.id from tag where tag.name = :tag_name)");
+            query.append("AND tag.id = (SELECT tag.id FROM tag WHERE tag.name = :tag_name)");
             queryParams.addValue("tag_name", tagName);
         }
         if (sortField != null && sortField.split(" ").length == 1 && sortType.split(" ").length == 1)
@@ -83,6 +84,7 @@ public class CertificateDAOImpl extends AbstractDAO<GiftCertificate> {
 
         Map<String, MapSqlParameterSource> map = new HashMap<>();
         map.put(query.toString(), queryParams);
+
         return map;
     }
 }

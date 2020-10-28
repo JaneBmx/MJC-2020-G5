@@ -18,10 +18,11 @@ import static com.epam.esm.util.Fields.*;
 
 @Repository
 public class TagDAOImpl extends AbstractDAO<Tag> implements TagDAO {
+
     @Autowired
     public TagDAOImpl(NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
-        super("select * from tag",
-                "delete from tag where id = ?",
+        super("SELECT * FROM tag",
+                "DELETE FROM tag WHERE id = ?",
                 null,
                 namedParameterJdbcTemplate,
                 new SimpleJdbcInsert(namedParameterJdbcTemplate.getJdbcTemplate().getDataSource())
@@ -34,11 +35,6 @@ public class TagDAOImpl extends AbstractDAO<Tag> implements TagDAO {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put(NAME, tag.getName());
         simpleJdbcInsert.execute(parameters);
-    }
-
-    @Override
-    public void update(Tag tag) {
-        throw new UnsupportedOperationException();
     }
 
     @Override
