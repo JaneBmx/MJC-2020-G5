@@ -1,25 +1,27 @@
 package com.epam.esm.entity;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
 public class GiftCertificate {
-    private long id;
+    private int id;
     private String name;
     private String description;
     private double price;
-    private LocalDateTime createDate;
-    private LocalDateTime lastUpdateDate;
+    private String createDate;
+    private String lastUpdateDate;
     private int duration;
 
-    private Set<Tag> tags;
+    private Set<Tag> tags = new HashSet<>();
 
-    public long getId() {
+    public int getId()
+    {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -47,19 +49,19 @@ public class GiftCertificate {
         this.price = price;
     }
 
-    public LocalDateTime getCreateDate() {
+    public String getCreateDate() {
         return createDate;
     }
 
-    public void setCreateDate(LocalDateTime createDate) {
+    public void setCreateDate(String createDate) {
         this.createDate = createDate;
     }
 
-    public LocalDateTime getLastUpdateDate() {
+    public String getLastUpdateDate() {
         return lastUpdateDate;
     }
 
-    public void setLastUpdateDate(LocalDateTime lastUpdateDate) {
+    public void setLastUpdateDate(String lastUpdateDate) {
         this.lastUpdateDate = lastUpdateDate;
     }
 

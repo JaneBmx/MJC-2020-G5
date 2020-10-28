@@ -22,7 +22,7 @@ public class CertificateDAOImpl extends AbstractDAO<GiftCertificate> implements 
     public CertificateDAOImpl(NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
         super("SELECT * FROM gift_certificate",
                 "DELETE FROM gift_certificate WHERE id = ?",
-                "UPDATE gift_certificate SET name = ?, description = ?",
+                "UPDATE gift_certificate SET name = ?, description = ?, price = ?, last_update_date = ?, duration =?",
                 namedParameterJdbcTemplate,
                 new SimpleJdbcInsert(namedParameterJdbcTemplate.getJdbcTemplate().getDataSource())
                         .withTableName(CERTIFICATE_TABLE),
@@ -51,10 +51,8 @@ public class CertificateDAOImpl extends AbstractDAO<GiftCertificate> implements 
                 certificate.getName() == null ? oldCertificate.getName() : certificate.getName(),
                 certificate.getDescription() == null ? oldCertificate.getDescription() : certificate.getDescription(),
                 certificate.getPrice() == 0.0 ? oldCertificate.getPrice() : certificate.getPrice(),
-                certificate.getCreateDate() == null ? oldCertificate.getCreateDate() : certificate.getCreateDate(),
                 LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME),
-                certificate.getDuration() == 0 ? oldCertificate.getDuration() : certificate.getDuration(),
-                certificate.getId());
+                certificate.getDuration() == 0 ? oldCertificate.getDuration() : certificate.getDuration());
     }
 
     @Override
