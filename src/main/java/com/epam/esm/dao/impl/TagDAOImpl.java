@@ -38,6 +38,11 @@ public class TagDAOImpl extends AbstractDAO<Tag> implements TagDAO {
     }
 
     @Override
+    public void update(Tag tag) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     protected Map<String, MapSqlParameterSource> buildQuery(Map<String, String> params) {
         StringBuilder query = new StringBuilder("SELECT * FROM tag");
         MapSqlParameterSource queryParams = new MapSqlParameterSource();
