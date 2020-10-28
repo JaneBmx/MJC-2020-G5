@@ -63,32 +63,22 @@ public class CertificateDAOImpl extends AbstractDAO<GiftCertificate> {
         String tagName = params.remove(TAG_NAME);
         String name = params.get(NAME) == null ? "" : params.remove(NAME);
         String description = params.get(DESCRIPTION) == null ? "" : params.get(DESCRIPTION);
-
         MapSqlParameterSource queryParams = new MapSqlParameterSource();
+        StringBuilder query = new StringBuilder("SELECT gift_certificate.* FROM gift_certificate");
 
-        StringBuilder query = new StringBuilder(
-                    "SELECT gift_certificate.* " +
-                    "FROM gift_certificate");
-        if (tagName != null) {
-            query.append(
-                    "JOIN gift_certificate2tag " +
-                    "ON gift_certificate.id = gift_certificate2tag.gift_certificate_id " +
-                    "JOIN tag " +
-                    "ON tag.id = gift_certificate2tag.tag_id ");
-            queryParams.addValue("tag_name", tagName);
-        }
-        query.append(
-                    "WHERE gift_certificate.description LIKE :description  " +
-                    "AND gift_certificate.name LIKE :name ");
+        if (tagName != null)
+            query.append("JOIN gift_certificate2tag ON gift_certificate.id = gift_certificate2tag.gift_certificate_id " +
+                    "JOIN tag ON tag.id = gift_certificate2tag.tag_id ");
+        query.append(" WHERE gift_certificate.description LIKE :description  " +
+                "AND gift_certificate.name LIKE :name ");
         queryParams.addValue("description", "%" + description + "%")
                 .addValue("name", "%" + name + "%");
-        if (tagName != null) query.append(
-                    "AND tag.id = (select tag.id from tag where tag.name = :tag_name)");
-        if (sortField != null) {
-            query.append(
-                    "ORDER BY :sort_field :sort_order");
-            queryParams.addValue("sort_field", sortField).addValue("sort_order", sortType);
+        if (tagName != null) {
+            query.append("AND tag.id = (select tag.id from tag where tag.name = :tag_name)");
+            queryParams.addValue("tag_name", tagName);
         }
+        if (sortField != null && sortField.split(" ").length == 1 && sortType.split(" ").length == 1)
+            query.append(String.format("ORDER BY %s %s", sortField, sortType));
         query.append(";");
 
         Map<String, MapSqlParameterSource> map = new HashMap<>();
