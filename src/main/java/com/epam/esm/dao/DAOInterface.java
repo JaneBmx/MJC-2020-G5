@@ -12,6 +12,4 @@ public interface DAOInterface<T> {
     List<T> findBy(Map<String, String> params);
 
     void delete(int id);
-
-    void update(T t);
 }
