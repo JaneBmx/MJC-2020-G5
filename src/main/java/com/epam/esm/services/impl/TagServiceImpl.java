@@ -29,6 +29,7 @@ public class TagServiceImpl implements ServiceInterface<Tag> {
     public Tag getById(int id) {
         Map<String, String> params = new HashMap<>();
         params.put(Fields.ID, String.valueOf(id));
+
         return dao.findBy(params).get(0);
     }
 
@@ -45,7 +46,9 @@ public class TagServiceImpl implements ServiceInterface<Tag> {
     @Override
     public void delete(int id) {
         Tag tag = this.getById(id);
-        if (tag == null) throw new TagNotFoundException("Tag with id " + id + " was not found");
+        if (tag == null) {
+            throw new TagNotFoundException("Tag with id " + id + " was not found");
+        }
         dao.delete(id);
     }
 

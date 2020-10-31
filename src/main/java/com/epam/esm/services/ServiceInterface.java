@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 public interface ServiceInterface<T> {
+
     List<T> getAll();
 
     T getById(int id);

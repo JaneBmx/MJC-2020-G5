@@ -19,6 +19,7 @@
         <mysql-connector-java.version>8.0.19</mysql-connector-java.version>
         <jackson.version>2.11.3</jackson.version>
         <javax-servlet.version>4.0.1</javax-servlet.version>
+        <log4j.version>2.13.2</log4j.version>
     </properties>
 
     <dependencies>
@@ -57,6 +58,12 @@
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
             <version>${jackson.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>${log4j.version}</version>
         </dependency>
     </dependencies>
 

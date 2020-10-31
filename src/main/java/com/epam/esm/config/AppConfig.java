@@ -1,6 +1,8 @@
 package com.epam.esm.config;
 
 import com.mchange.v2.c3p0.ComboPooledDataSource;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -18,8 +20,9 @@ import java.beans.PropertyVetoException;
 @Configuration
 @EnableWebMvc
 @ComponentScan(basePackages = "com.epam.esm")
-@PropertySource("classpath:db.properties")
+@PropertySource("classpath:dev-db.properties")
 public class AppConfig {
+    private static final Logger LOGGER = LogManager.getLogger(AppConfig.class);
     private final Environment env;
 
     public AppConfig(Environment env) {
@@ -31,17 +34,17 @@ public class AppConfig {
         ComboPooledDataSource securityDataSource = new ComboPooledDataSource();
         try {
             securityDataSource.setDriverClass(env.getProperty("jdbc.driver"));
+            securityDataSource.setJdbcUrl(env.getProperty("jdbc.url"));
+            securityDataSource.setUser(env.getProperty("jdbc.user"));
+            securityDataSource.setPassword(env.getProperty("jdbc.password"));
+            securityDataSource.setMaxPoolSize(Integer.parseInt(env.getProperty("connection.pool.maxPoolSize")));
+            securityDataSource.setMinPoolSize(Integer.parseInt(env.getProperty("connection.pool.minPoolSize")));
+            securityDataSource.setMaxIdleTime(Integer.parseInt(env.getProperty("connection.pool.maxIdleTime")));
+            securityDataSource.setInitialPoolSize(Integer.parseInt(env.getProperty("connection.pool.initialPoolSize")));
         } catch (PropertyVetoException e) {
-            //TODO add logging
+            LOGGER.error("Error during loading database properties", e);
         }
-        securityDataSource.setJdbcUrl(env.getProperty("jdbc.url"));
-        securityDataSource.setUser(env.getProperty("jdbc.user"));
-        securityDataSource.setPassword(env.getProperty("jdbc.password"));
-        securityDataSource.setMaxPoolSize(Integer.parseInt(env.getProperty("connection.pool.maxPoolSize")));
-        securityDataSource.setMinPoolSize(Integer.parseInt(env.getProperty("connection.pool.minPoolSize")));
-        securityDataSource.setMaxIdleTime(Integer.parseInt(env.getProperty("connection.pool.maxIdleTime")));
-        securityDataSource.setInitialPoolSize(Integer.parseInt(env.getProperty("connection.pool.initialPoolSize")));
-
+        LOGGER.info("Database properties has been initialized");
         return securityDataSource;
     }
 

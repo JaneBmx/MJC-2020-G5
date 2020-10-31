@@ -10,22 +10,25 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 @ControllerAdvice
 public class CustomExceptionHandler {
+    private static final int TNF_CODE = 1231231;
+    private static final int GNF_CODE = 112233;
+    private static final int BR_CODE = 234567;
 
     @ExceptionHandler
     public ResponseEntity<ErrorResponse> handleTagNotFoundException(TagNotFoundException e) {
-        return new ResponseEntity<>(new ErrorResponse(1231231, e.getMessage()),
+        return new ResponseEntity<>(new ErrorResponse(TNF_CODE, e.getMessage()),
                 HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler
     public ResponseEntity<ErrorResponse> handleGiftCertificateNotFoundException(GiftCertificateNotFoundException e) {
-        return new ResponseEntity<>(new ErrorResponse(112233, e.getMessage()),
+        return new ResponseEntity<>(new ErrorResponse(GNF_CODE, e.getMessage()),
                 HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler
     public ResponseEntity<ErrorResponse> handleAdd(Exception e) {
-        return new ResponseEntity<>(new ErrorResponse(234567, e.getMessage()),
+        return new ResponseEntity<>(new ErrorResponse(BR_CODE, e.getMessage()),
                 HttpStatus.BAD_REQUEST);
     }
 }

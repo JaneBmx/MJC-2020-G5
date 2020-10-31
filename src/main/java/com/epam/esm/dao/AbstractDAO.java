@@ -9,9 +9,9 @@ import java.util.List;
 import java.util.Map;
 
 public abstract class AbstractDAO<T> implements DAOInterface<T> {
-    protected String FIND_ALL_QUERY;
-    protected String DELETE_QUERY;
-    protected String UPDATE_QUERY;
+    protected final String FIND_ALL_QUERY;
+    protected final String DELETE_QUERY;
+    protected final String UPDATE_QUERY;
 
     protected NamedParameterJdbcTemplate namedParameterJdbcTemplate;
     protected SimpleJdbcInsert simpleJdbcInsert;

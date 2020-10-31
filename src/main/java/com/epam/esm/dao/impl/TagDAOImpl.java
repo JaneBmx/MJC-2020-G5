@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Repository;
 
 import java.util.HashMap;
@@ -25,7 +26,7 @@ public class TagDAOImpl extends AbstractDAO<Tag> implements TagDAO {
                 "DELETE FROM tag WHERE id = ?",
                 null,
                 namedParameterJdbcTemplate,
-                new SimpleJdbcInsert(namedParameterJdbcTemplate.getJdbcTemplate().getDataSource())
+                new SimpleJdbcInsert( namedParameterJdbcTemplate.getJdbcTemplate().getDataSource())
                         .withTableName(TAG_TABLE),
                 new TagMapper());
     }
@@ -68,7 +69,6 @@ public class TagDAOImpl extends AbstractDAO<Tag> implements TagDAO {
         query.append(";");
         Map<String, MapSqlParameterSource> map = new HashMap<>();
         map.put(query.toString(), queryParams);
-        System.out.println(query);
         return map;
     }
 

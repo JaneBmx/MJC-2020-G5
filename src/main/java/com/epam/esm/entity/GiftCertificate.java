@@ -1,6 +1,5 @@
 package com.epam.esm.entity;
 
-import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;

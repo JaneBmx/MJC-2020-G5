@@ -31,12 +31,18 @@ public class GiftCertificateController {
     ) {
         if (name == null && description == null && sort == null && sortType == null && tagName == null)
             return service.getAll();
+
         Map<String, String> params = new HashMap<>();
-        if (name != null) params.put(NAME, name);
-        if (description != null) params.put(DESCRIPTION, description);
-        if (sort != null) params.put(SORT, sort);
-        if (sortType != null) params.put(SORT_TYPE, sortType);
-        if (tagName != null) params.put(TAG_NAME, tagName);
+        if (name != null)
+            params.put(NAME, name);
+        if (description != null)
+            params.put(DESCRIPTION, description);
+        if (sort != null)
+            params.put(SORT, sort);
+        if (sortType != null)
+            params.put(SORT_TYPE, sortType);
+        if (tagName != null)
+            params.put(TAG_NAME, tagName);
         return service.getBy(params);
     }
 

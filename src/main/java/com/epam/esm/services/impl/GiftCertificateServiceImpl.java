@@ -8,6 +8,8 @@ import com.epam.esm.entity.Tag;
 import com.epam.esm.exception.GiftCertificateNotFoundException;
 import com.epam.esm.services.ServiceInterface;
 import com.epam.esm.util.Fields;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -45,10 +47,12 @@ public class GiftCertificateServiceImpl implements ServiceInterface<GiftCertific
         params.put(Fields.ID, String.valueOf(id));
         List<GiftCertificate> certificates = certificateDao.findBy(params);
         GiftCertificate certificate = certificates == null || certificates.size() == 0 ? null : certificateDao.findBy(params).get(0);
-        if (certificate == null)
+        if (certificate == null) {
             throw new GiftCertificateNotFoundException(String.format("Certificate (id=%d) not found", id));
+        }
         List<Tag> tags = tagDao.getByCertificateId(id);
         certificate.getTags().addAll(tags);
+
         return certificate;
     }
 
@@ -56,12 +60,14 @@ public class GiftCertificateServiceImpl implements ServiceInterface<GiftCertific
     @Override
     public List<GiftCertificate> getBy(Map<String, String> params) {
         List<GiftCertificate> certificates = certificateDao.findBy(params);
-        if (certificates == null || certificates.size() == 0)
+        if (certificates == null || certificates.size() == 0) {
             throw new GiftCertificateNotFoundException("Certificate not found");
+        }
         certificates.forEach(c -> {
             List<Tag> tags = tagDao.getByCertificateId(c.getId());
             c.getTags().addAll(tags);
         });
+
         return certificates;
     }
 
@@ -87,6 +93,7 @@ public class GiftCertificateServiceImpl implements ServiceInterface<GiftCertific
                 List<Tag> tags = tagDao.findBy(params);
                 if (tags == null || tags.size() == 0) tagDao.create(t);
             });
+
         certificateDao.create(certificate);
     }
 }
