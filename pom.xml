@@ -20,6 +20,7 @@
         <jackson.version>2.11.3</jackson.version>
         <javax-servlet.version>4.0.1</javax-servlet.version>
         <log4j.version>2.13.2</log4j.version>
+        <javax-validator-version>2.0.0.Final</javax-validator-version>
     </properties>
 
     <dependencies>
@@ -64,6 +65,12 @@
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-core</artifactId>
             <version>${log4j.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>javax.validation</groupId>
+            <artifactId>validation-api</artifactId>
+            <version>${javax-validator-version}</version>
         </dependency>
     </dependencies>
 

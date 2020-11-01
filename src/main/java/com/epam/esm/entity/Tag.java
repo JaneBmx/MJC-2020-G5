@@ -1,9 +1,13 @@
 package com.epam.esm.entity;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.Objects;
 
 public class Tag {
     private int id;
+    @NotNull
+    @Size(min = 1, max = 10)
     private String name;
 
     public Tag() {

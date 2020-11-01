@@ -1,22 +1,30 @@
 package com.epam.esm.entity;
 
+import javax.validation.constraints.*;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
 public class GiftCertificate {
     private int id;
+    @NotEmpty
+    @Size(min = 2, max = 10)
     private String name;
+    @NotEmpty
+    @Size(min = 1, max = 100)
     private String description;
+    @Positive
     private double price;
+    @NotEmpty
     private String createDate;
+    @NotEmpty
     private String lastUpdateDate;
+    @Positive
     private int duration;
 
-    private Set<Tag> tags = new HashSet<>();
+    private Set<@NotNull Tag> tags = new HashSet<>();
 
-    public int getId()
-    {
+    public int getId() {
         return id;
     }
 
