@@ -3,12 +3,9 @@ package com.epam.esm.services.impl;
 import com.epam.esm.dao.DAOInterface;
 import com.epam.esm.dao.impl.TagDAOImpl;
 import com.epam.esm.entity.Tag;
-import com.epam.esm.exception.TagNotFoundException;
 import com.epam.esm.services.ServiceInterface;
-import com.epam.esm.util.Fields;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -27,10 +24,7 @@ public class TagServiceImpl implements ServiceInterface<Tag> {
 
     @Override
     public Tag getById(int id) {
-        Map<String, String> params = new HashMap<>();
-        params.put(Fields.ID, String.valueOf(id));
-
-        return dao.findBy(params).get(0);
+        return dao.findById(id);
     }
 
     @Override
@@ -45,10 +39,6 @@ public class TagServiceImpl implements ServiceInterface<Tag> {
 
     @Override
     public void delete(int id) {
-        Tag tag = this.getById(id);
-        if (tag == null) {
-            throw new TagNotFoundException("Tag with id " + id + " was not found");
-        }
         dao.delete(id);
     }
 
