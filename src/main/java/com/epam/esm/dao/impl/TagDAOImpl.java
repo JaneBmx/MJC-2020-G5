@@ -1,14 +1,13 @@
 package com.epam.esm.dao.impl;
 
 import com.epam.esm.dao.AbstractDAO;
-import com.epam.esm.dao.TagDAO;
+import com.epam.esm.dao.DAOInterface;
 import com.epam.esm.dao.mappers.TagMapper;
 import com.epam.esm.entity.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
-import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Repository;
 
 import java.util.HashMap;
@@ -18,16 +17,20 @@ import java.util.Map;
 import static com.epam.esm.util.Fields.*;
 
 @Repository
-public class TagDAOImpl extends AbstractDAO<Tag> implements TagDAO {
+public class TagDAOImpl extends AbstractDAO<Tag> implements DAOInterface<Tag> {
+    private static final String FIND_ALL_QUERY = "SELECT * FROM tag";
+    private static final String DELETE_BY_ID_QUERY = "DELETE FROM tag WHERE id = ?";
+    private static final String FIND_BY_NAME_QUERY = "SELECT * FROM tag WHERE NAME LIKE :name";
+    private static final String FIND_BY_TAG_ID_QUERY = "SELECT * FROM tag WHERE id = :id";
+    private static final String FIND_BY_CERTIFICATE_ID_QUERY = "SELECT id, name FROM tag t " +
+            "LEFT JOIN gift_certificate2tag g " +
+            "ON t.id = g.tag_id WHERE gift_certificate_id = :id;";
+
 
     @Autowired
     public TagDAOImpl(NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
-        super("SELECT * FROM tag",
-                "DELETE FROM tag WHERE id = ?",
-                null,
-                namedParameterJdbcTemplate,
-                new SimpleJdbcInsert( namedParameterJdbcTemplate.getJdbcTemplate().getDataSource())
-                        .withTableName(TAG_TABLE),
+        super(namedParameterJdbcTemplate,
+                new SimpleJdbcInsert(namedParameterJdbcTemplate.getJdbcTemplate().getDataSource()).withTableName(TAG_TABLE),
                 new TagMapper());
     }
 
@@ -39,45 +42,40 @@ public class TagDAOImpl extends AbstractDAO<Tag> implements TagDAO {
     }
 
     @Override
+    public List<Tag> findAll() {
+        return namedParameterJdbcTemplate.query(FIND_ALL_QUERY, mapper);
+    }
+
+    @Override
+    public List<Tag> findBy(Map<String, String> params) {
+        throw new UnsupportedOperationException("findBy don't support");
+    }
+
+    @Override
     public void update(Tag tag) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("update don't support");
     }
 
     @Override
-    protected Map<String, MapSqlParameterSource> buildQuery(Map<String, String> params) {
-        StringBuilder query = new StringBuilder("SELECT * FROM tag");
-        MapSqlParameterSource queryParams = new MapSqlParameterSource();
-        String sortField = params.remove(SORT);
-        String sortType = params.get(SORT_TYPE) == null ? SORT_ASC : params.remove(SORT_TYPE);
-        String name = params.remove(NAME);
-        String id = params.remove(ID);
-        String predicate = " and";
+    public void delete(int id) {
+        namedParameterJdbcTemplate.getJdbcTemplate().update(DELETE_BY_ID_QUERY, id);
+    }
 
-        if (name != null) {
-            query.append(String.format(" WHERE %s = :tag_name ", NAME));
-            queryParams.addValue("tag_name", name);
-        } else predicate = " WHERE";
-
-        if (id != null) {
-            query.append(String.format(predicate + " %s = :id ", ID));
-            queryParams.addValue(ID, id);
-        }
-
-        if (sortField != null && sortField.split(" ").length == 1 && sortType.split(" ").length == 1) //primitive sql-injection protection
-            query.append(String.format(" ORDER BY %s %s", sortField, sortType));
-
-        query.append(";");
-        Map<String, MapSqlParameterSource> map = new HashMap<>();
-        map.put(query.toString(), queryParams);
-        return map;
+    public List<Tag> findByCertificateId(int id) {
+        MapSqlParameterSource queryParams = new MapSqlParameterSource().addValue(ID, id);
+        return namedParameterJdbcTemplate.query(FIND_BY_CERTIFICATE_ID_QUERY, queryParams, mapper);
     }
 
     @Override
-    public List<Tag> getByCertificateId(int certificateId) {
-        String query = "SELECT tag.* FROM tag " +
-                "LEFT JOIN gift_certificate2tag ON tag.id = gift_certificate2tag.tag_id " +
-                "WHERE gift_certificate2tag.gift_certificate_id = " + certificateId + ";";
+    public Tag findById(int id) {
+        MapSqlParameterSource queryParams = new MapSqlParameterSource().addValue(ID, id);
+        return namedParameterJdbcTemplate.queryForObject(FIND_BY_TAG_ID_QUERY, queryParams, mapper);
+    }
 
-        return this.namedParameterJdbcTemplate.query(query, this.mapper);
+    @Override
+    public List<Tag> findByName(String name) {
+        MapSqlParameterSource queryParams = new MapSqlParameterSource()
+                .addValue(NAME, "%" + name + "%");
+        return namedParameterJdbcTemplate.query(FIND_BY_NAME_QUERY, queryParams, mapper);
     }
 }

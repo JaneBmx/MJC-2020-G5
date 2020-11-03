@@ -14,4 +14,8 @@ public interface DAOInterface<T> {
     void delete(int id);
 
     void update(T t);
+
+    T findById(int id);
+
+    List<T> findByName(String name);
 }
