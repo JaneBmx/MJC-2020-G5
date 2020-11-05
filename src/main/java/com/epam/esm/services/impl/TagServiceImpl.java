@@ -3,7 +3,9 @@ package com.epam.esm.services.impl;
 import com.epam.esm.dao.DAOInterface;
 import com.epam.esm.dao.impl.TagDAOImpl;
 import com.epam.esm.entity.Tag;
+import com.epam.esm.exception.TagNotFoundException;
 import com.epam.esm.services.ServiceInterface;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -11,39 +13,51 @@ import java.util.Map;
 
 @Service
 public class TagServiceImpl implements ServiceInterface<Tag> {
-    private final DAOInterface<Tag> dao;
+    private final DAOInterface<Tag> tagDao;
 
-    public TagServiceImpl(TagDAOImpl dao) {
-        this.dao = dao;
+    @Autowired
+    public TagServiceImpl(TagDAOImpl tagDao) {
+        this.tagDao = tagDao;
     }
 
     @Override
     public List<Tag> getAll() {
-        return dao.findAll();
+        return tagDao.findAll();
     }
 
     @Override
     public Tag getById(int id) {
-        return dao.findById(id);
+        return tagDao.findById(id);
     }
 
     @Override
     public List<Tag> getBy(Map<String, String> params) {
-        return dao.findBy(params);
+        return tagDao.findBy(params);
     }
 
     @Override
     public void update(Tag tag) {
-        dao.update(tag);
+        tagDao.update(tag);
     }
 
     @Override
     public void delete(int id) {
-        dao.delete(id);
+        Tag tag = tagDao.findById(id);
+        if (tag == null)
+            throw new TagNotFoundException("Tag with id " + id + " not found!");
+
+        tagDao.delete(id);
     }
 
     @Override
     public void create(Tag tag) {
-        dao.create(tag);
+        tagDao.create(tag);
+    }
+
+    @Override
+    public Tag save(Tag tag) {
+        tagDao.create(tag);
+
+        return tagDao.findByName(tag.getName()).get(0);
     }
 }

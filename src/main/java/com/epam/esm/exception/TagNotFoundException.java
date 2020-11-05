@@ -1,6 +1,6 @@
 package com.epam.esm.exception;
 
-public class TagNotFoundException extends RuntimeException {
+public class TagNotFoundException extends ItemNotFoundException {
     public TagNotFoundException() {
         super();
     }

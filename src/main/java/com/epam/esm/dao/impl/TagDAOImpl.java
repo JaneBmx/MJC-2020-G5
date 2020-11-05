@@ -26,7 +26,6 @@ public class TagDAOImpl extends AbstractDAO<Tag> implements DAOInterface<Tag> {
             "LEFT JOIN gift_certificate2tag g " +
             "ON t.id = g.tag_id WHERE gift_certificate_id = :id;";
 
-
     @Autowired
     public TagDAOImpl(NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
         super(namedParameterJdbcTemplate,

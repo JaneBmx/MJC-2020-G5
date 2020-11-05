@@ -21,6 +21,7 @@
         <javax-servlet.version>4.0.1</javax-servlet.version>
         <log4j.version>2.13.2</log4j.version>
         <javax-validator-version>2.0.0.Final</javax-validator-version>
+        <jupiter.version>5.7.0</jupiter.version>
     </properties>
 
     <dependencies>
@@ -72,6 +73,14 @@
             <artifactId>validation-api</artifactId>
             <version>${javax-validator-version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>${jupiter.version}</version>
+            <scope>test</scope>
+        </dependency>
+
     </dependencies>
 
     <build>

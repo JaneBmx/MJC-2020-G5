@@ -73,6 +73,7 @@ public class CertificateDAOImpl extends AbstractDAO<GiftCertificate> implements 
     @Override
     public GiftCertificate findById(int id) {
         MapSqlParameterSource queryParams = new MapSqlParameterSource().addValue(ID, id);
+
         return namedParameterJdbcTemplate.queryForObject(FIND_BY_ID, queryParams, mapper);
     }
 
@@ -80,6 +81,7 @@ public class CertificateDAOImpl extends AbstractDAO<GiftCertificate> implements 
     public List<GiftCertificate> findByName(String name) {
         Map<String, String>params = new HashMap<>();
         params.put(NAME, name);
+
         return findBy(params);
     }
 
@@ -116,6 +118,7 @@ public class CertificateDAOImpl extends AbstractDAO<GiftCertificate> implements 
         query.append(";");
         Map<String, MapSqlParameterSource> map = new HashMap<>();
         map.put(query.toString(), queryParams);
+
         return map;
     }
 }

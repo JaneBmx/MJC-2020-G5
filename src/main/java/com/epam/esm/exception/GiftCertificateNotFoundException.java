@@ -1,6 +1,6 @@
 package com.epam.esm.exception;
 
-public class GiftCertificateNotFoundException extends RuntimeException {
+public class GiftCertificateNotFoundException extends ItemNotFoundException {
     public GiftCertificateNotFoundException() {
         super();
     }

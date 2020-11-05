@@ -18,6 +18,10 @@ public final class Fields {
 
     public static final String TAG_TABLE = "tag";
     public static final String CERTIFICATE_TABLE = "gift_certificate";
+    public static final String TABLE_NAME = "gift_certificate2tag";
+    public static final String GIFT_CERTIFICATE_ID = "gift_certificate_id";
+    public static final String TAG_ID = "tag_id";
+
 
 //---------------for find queries--------------
 

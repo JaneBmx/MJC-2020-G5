@@ -11,9 +11,11 @@ public interface ServiceInterface<T> {
 
     List<T> getBy(Map<String, String> params);
 
-    void update (T t);
+    void update(T t);
 
     void delete(int id);
 
     void create(T t);
+
+    T save(T t);
 }
