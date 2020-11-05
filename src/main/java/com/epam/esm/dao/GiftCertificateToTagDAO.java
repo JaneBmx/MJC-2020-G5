@@ -23,21 +23,16 @@ public class GiftCertificateToTagDAO extends AbstractDAO {
                 null);
     }
 
-    public int batchInsert(int[][] indexes) {
-        int insertsCounts = 0;
+    public void mapGiftCertificateToTag(int giftCertificateId, int tagId) {
         Map<String, Object> parameters = new HashMap<>();
 
-        for (int i = 1; i < indexes.length; i++) {
-            parameters.put(GIFT_CERTIFICATE_ID, indexes[i][0]);
-            parameters.put(TAG_ID, indexes[i][1]);
-            insertsCounts += simpleJdbcInsert.execute(parameters);
-        }
-
-        return insertsCounts;
+        parameters.put(GIFT_CERTIFICATE_ID, giftCertificateId);
+        parameters.put(TAG_ID, tagId);
+        simpleJdbcInsert.execute(parameters);
     }
 
-    public int batchDelete(int certificateId) {
+    public int batchDelete(int giftCertificateId) {
         return namedParameterJdbcTemplate.getJdbcTemplate()
-                .update(DELETE_INDEXES_QUERY, certificateId);
+                .update(DELETE_INDEXES_QUERY, giftCertificateId);
     }
 }

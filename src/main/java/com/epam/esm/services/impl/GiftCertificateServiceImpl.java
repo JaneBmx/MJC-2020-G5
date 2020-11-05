@@ -72,23 +72,14 @@ public class GiftCertificateServiceImpl implements ServiceInterface<GiftCertific
     @Override
     public void update(GiftCertificate certificate) {
         giftCertificateDAO.update(certificate);
-
         giftCertificateToTagDAO.batchDelete(certificate.getId());
-
-        for (Tag t : certificate.getTags()) {
+        for (Tag t : certificate.getTags())
             tagDAO.create(t);
-        }
 
         List<Tag> tags = tagDAO.findByCertificateId(certificate.getId());
 
-        int[][] indexes = new int[tags.size()][2];
-
-        for (int i = 0; i < tags.size(); i++) {
-            indexes[i][0] = certificate.getId();
-            indexes[i][1] = tags.get(i).getId();
-        }
-
-        giftCertificateToTagDAO.batchInsert(indexes);
+        for (Tag tag : tags)
+            giftCertificateToTagDAO.mapGiftCertificateToTag(certificate.getId(), tag.getId());
     }
 
     @Transactional
@@ -108,19 +99,14 @@ public class GiftCertificateServiceImpl implements ServiceInterface<GiftCertific
         for (Tag t : giftCertificate.getTags())
             tagDAO.create(t);
 
-        int[][] indexes = new int[giftCertificate.getTags().size()][2];
-        int count = 0;
         for (Tag t : giftCertificate.getTags()) {
             if (t.getId() == 0) {
                 tagDAO.create(t);
                 t = tagDAO.findByName(t.getName()).get(0);
             }
-            indexes[count][0] = giftCertificate.getId();
-            indexes[count][1] = t.getId();
-            count++;
-        }
 
-        giftCertificateToTagDAO.batchInsert(indexes);
+            giftCertificateToTagDAO.mapGiftCertificateToTag(giftCertificate.getId(),  t.getId());
+        }
     }
 
     @Override
