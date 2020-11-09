@@ -17,5 +17,5 @@ public interface DAOInterface<T> {
 
     T findById(int id);
 
-    List<T> findByName(String name);
+    T findByName(String name);
 }

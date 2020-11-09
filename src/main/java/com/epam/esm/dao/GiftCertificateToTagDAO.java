@@ -1,38 +1,42 @@
 package com.epam.esm.dao;
 
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
+import com.epam.esm.exception.DAOException;
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
-
-import java.util.HashMap;
-import java.util.Map;
-
-import static com.epam.esm.util.Fields.*;
 
 @Repository
 public class GiftCertificateToTagDAO extends AbstractDAO {
-    private static final String INSERT_INDEXES_QUERY
-            = "INSERT INTO gift_certificate2tag (gift_certificate_id, tag_id) values(?, ?)";
-    private static final String DELETE_INDEXES_QUERY =
-            "DELETE FROM gift_certificate2tag WHERE gift_certificate_id = ?";
+    private static final String DELETE_INDEXES_BY_GIFT_CERTIFICATE_QUERY = "DELETE FROM gift_certificate2tag WHERE gift_certificate_id = ?";
+    private static final String DELETE_INDEXES_BY_TAG_ID_QUERY = "DELETE FROM gift_certificate2tag WHERE tag_id = ?";
+    private static final String CREATE_QUERY = "INSERT INTO gift_certificate2tag (gift_certificate_id, tag_id) VALUES (?, ?)";
 
-    public GiftCertificateToTagDAO(NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
-        super(null,
-                new SimpleJdbcInsert(namedParameterJdbcTemplate.getJdbcTemplate().getDataSource())
-                        .withTableName(TABLE_NAME),
-                null);
+
+    public GiftCertificateToTagDAO(JdbcTemplate jdbcTemplate) {
+        super(jdbcTemplate, null);
     }
 
     public void mapGiftCertificateToTag(int giftCertificateId, int tagId) {
-        Map<String, Object> parameters = new HashMap<>();
-
-        parameters.put(GIFT_CERTIFICATE_ID, giftCertificateId);
-        parameters.put(TAG_ID, tagId);
-        simpleJdbcInsert.execute(parameters);
+        try {
+            jdbcTemplate.update(CREATE_QUERY, giftCertificateId, tagId);
+        } catch (DataAccessException e) {
+            throw new DAOException(e);
+        }
     }
 
-    public int batchDelete(int giftCertificateId) {
-        return namedParameterJdbcTemplate.getJdbcTemplate()
-                .update(DELETE_INDEXES_QUERY, giftCertificateId);
+    public void deleteByGiftCertificateId(int giftCertificateId) {
+        try {
+            jdbcTemplate.update(DELETE_INDEXES_BY_GIFT_CERTIFICATE_QUERY, giftCertificateId);
+        } catch (DataAccessException e) {
+            throw new DAOException(e);
+        }
+    }
+
+    public void deleteByTagId(int tagId) {
+        try {
+            jdbcTemplate.update(DELETE_INDEXES_BY_TAG_ID_QUERY, tagId);
+        } catch (DataAccessException e) {
+            throw new DAOException(e);
+        }
     }
 }

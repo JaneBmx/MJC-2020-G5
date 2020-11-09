@@ -22,17 +22,7 @@ public final class Fields {
     public static final String GIFT_CERTIFICATE_ID = "gift_certificate_id";
     public static final String TAG_ID = "tag_id";
 
-
-//---------------for find queries--------------
-
     public static final String TAG_NAME = "tag_name";
-    /**
-     * Key for field which sorting by
-     */
     public static final String SORT = "sort";
-
-    /**
-     * Sort type(asc\desc)
-     */
     public static final String SORT_TYPE = "sort_type";
 }

@@ -1,7 +1,9 @@
 package com.epam.esm.exception;
 
 public class ItemNotFoundException extends RuntimeException {
+
     public ItemNotFoundException() {
+        super();
     }
 
     public ItemNotFoundException(String message) {
@@ -16,7 +18,7 @@ public class ItemNotFoundException extends RuntimeException {
         super(cause);
     }
 
-    public ItemNotFoundException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+    protected ItemNotFoundException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
     }
 }

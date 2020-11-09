@@ -11,7 +11,7 @@ public interface ServiceInterface<T> {
 
     List<T> getBy(Map<String, String> params);
 
-    void update(T t);
+    T update(T t);
 
     void delete(int id);
 
