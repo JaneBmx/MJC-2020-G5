@@ -56,11 +56,9 @@ public class TagServiceImpl implements ServiceInterface<Tag> {
         }
     }
 
-    //@TODO complete
     @Override
     public Tag update(Tag tag) {
-      //  return tagDao.update(tag);
-        return null;
+        throw new UnsupportedOperationException("Update operation not supported for Tag");
     }
 
     @Override

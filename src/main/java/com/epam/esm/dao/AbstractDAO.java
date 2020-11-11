@@ -11,4 +11,20 @@ public abstract class AbstractDAO<T> {
         this.mapper = mapper;
         this.jdbcTemplate = jdbcTemplate;
     }
+
+    public RowMapper<T> getMapper() {
+        return mapper;
+    }
+
+    public void setMapper(RowMapper<T> mapper) {
+        this.mapper = mapper;
+    }
+
+    public JdbcTemplate getJdbcTemplate() {
+        return jdbcTemplate;
+    }
+
+    public void setJdbcTemplate(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
 }

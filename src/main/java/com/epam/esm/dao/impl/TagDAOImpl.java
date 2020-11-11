@@ -16,7 +16,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-
 @Repository
 public class TagDAOImpl extends AbstractDAO<Tag> implements DAOInterface<Tag> {
     private static final String FIND_ALL_QUERY = "SELECT id, name FROM tag";
@@ -24,7 +23,7 @@ public class TagDAOImpl extends AbstractDAO<Tag> implements DAOInterface<Tag> {
     private static final String FIND_BY_NAME_QUERY = "SELECT id, name FROM tag WHERE name = ?";
     private static final String FIND_BY_TAG_ID_QUERY = "SELECT id, name FROM tag WHERE id = ?";
     private static final String FIND_BY_CERTIFICATE_ID_QUERY = "SELECT id, name FROM tag t LEFT JOIN gift_certificate2tag g ON t.id = g.tag_id WHERE gift_certificate_id = ?;";
-    private static final String CREATE_QUERY = "INSERT into tag (name) value (?)";
+    private static final String CREATE_QUERY = "INSERT into tag (name) values (?)";
 
     @Autowired
     public TagDAOImpl(JdbcTemplate jdbcTemplate) {
@@ -62,9 +61,9 @@ public class TagDAOImpl extends AbstractDAO<Tag> implements DAOInterface<Tag> {
     }
 
     @Override
-    public void delete(int id) {
+    public int delete(int id) {
         try {
-            jdbcTemplate.update(DELETE_BY_ID_QUERY, id);
+            return jdbcTemplate.update(DELETE_BY_ID_QUERY, id);
         } catch (DataAccessException e) {
             throw new DAOException(e);
         }
@@ -87,7 +86,7 @@ public class TagDAOImpl extends AbstractDAO<Tag> implements DAOInterface<Tag> {
         } catch (IncorrectResultSizeDataAccessException e) {
             return null;
         } catch (DataAccessException e) {
-            throw new DAOException("DB error. Root cause: ", e);
+            throw new DAOException(e);
         }
     }
 

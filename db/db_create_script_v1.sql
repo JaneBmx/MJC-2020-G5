@@ -21,7 +21,8 @@ CREATE TABLE IF NOT EXISTS `certificates`.`gift_certificate`
     `last_update_date` TIMESTAMP    NOT NULL,
     `duration`         INT          NOT NULL,
     PRIMARY KEY (`id`),
-    UNIQUE INDEX `int_UNIQUE` (`id` ASC) VISIBLE
+    UNIQUE INDEX `int_UNIQUE` (`id` ASC) VISIBLE,
+    UNIQUE INDEX `name_UNIQUE` (`name` ASC) VISIBLE
 );
 
 

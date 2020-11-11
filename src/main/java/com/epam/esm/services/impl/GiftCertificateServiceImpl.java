@@ -19,8 +19,8 @@ import java.util.*;
 @Service
 public class GiftCertificateServiceImpl implements ServiceInterface<GiftCertificate> {
     private final DAOInterface<GiftCertificate> giftCertificateDAO;
-    private final TagDAOImpl tagDAO;
     private final GiftCertificateToTagDAO giftCertificateToTagDAO;
+    private final TagDAOImpl tagDAO;
 
     public GiftCertificateServiceImpl(GiftCertificateDAOImpl giftCertificateDAO,
                                       TagDAOImpl tagDAO,
@@ -59,7 +59,6 @@ public class GiftCertificateServiceImpl implements ServiceInterface<GiftCertific
         } catch (DAOException e) {
             throw new ServiceException(e);
         }
-
     }
 
     @Transactional
@@ -74,57 +73,20 @@ public class GiftCertificateServiceImpl implements ServiceInterface<GiftCertific
         return certificates;
     }
 
-
-    //@TODO add try&catch
     @Override
     @Transactional(isolation = Isolation.READ_UNCOMMITTED)
     public GiftCertificate update(GiftCertificate certificate) {
-        GiftCertificate giftCertificate = null;
-        if (certificate.getName() != null) {
-            giftCertificate = giftCertificateDAO.findByName(certificate.getName());
-            if (giftCertificate == null)
-                giftCertificate = giftCertificateDAO.findById(certificate.getId());
-            if (giftCertificate == null)
+        GiftCertificate oldGiftCertificate  = giftCertificateDAO.findById(certificate.getId());
+            if (oldGiftCertificate == null)
                 throw new ItemNotFoundException("Update failed! Gift certificate not found!");
-        }
 
-        giftCertificate.setName(certificate.getName() == null
-                ? giftCertificate.getName()
-                : certificate.getName());
-        giftCertificate.setDescription(certificate.getDescription() == null
-                ? giftCertificate.getName()
-                : certificate.getDescription());
-        giftCertificate.setPrice(certificate.getPrice() == 0
-                ? giftCertificate.getPrice()
-                : certificate.getPrice());
-        giftCertificate.setDuration(certificate.getDuration() == 0
-                ? giftCertificate.getDuration()
-                : certificate.getDuration());
-        giftCertificateDAO.update(certificate);
+        giftCertificateDAO.update(updateFields(oldGiftCertificate, certificate));
 
         giftCertificateToTagDAO.deleteByGiftCertificateId(certificate.getId());
         if (certificate.getTags() != null && !certificate.getTags().isEmpty())
-            mapTagsToGiftCertificates(certificate.getTags(), giftCertificate.getId());
+            mapTagsToGiftCertificates(certificate.getTags(), oldGiftCertificate.getId());
 
-        return getById(giftCertificate.getId());
-    }
-
-    /**
-     * Check tags existing, create if tag not found in DB, map tags to gift certificate
-     */
-    private void mapTagsToGiftCertificates(Set<Tag> tags, int giftCertificateId) {
-        Set<Tag> createdTags = new HashSet<>();
-
-        for (Tag t : tags) {
-            Tag tag = tagDAO.findByName(t.getName());
-            if (tag == null) {
-                tagDAO.create(t);
-                tag = tagDAO.findByName(t.getName());
-            }
-            createdTags.add(tag);
-        }
-        for (Tag t : createdTags)
-            giftCertificateToTagDAO.mapGiftCertificateToTag(giftCertificateId, t.getId());
+        return getById(oldGiftCertificate.getId());
     }
 
     @Override
@@ -134,6 +96,8 @@ public class GiftCertificateServiceImpl implements ServiceInterface<GiftCertific
             GiftCertificate giftCertificate = giftCertificateDAO.findById(id);
             if (giftCertificate == null)
                 throw new ItemNotFoundException("Not deleted! GiftCertificate with id " + id + " not found!");
+
+            giftCertificateToTagDAO.deleteByGiftCertificateId(giftCertificate.getId());
 
             giftCertificateDAO.delete(id);
         } catch (DAOException e) {
@@ -172,5 +136,39 @@ public class GiftCertificateServiceImpl implements ServiceInterface<GiftCertific
         update(giftCertificate);
 
         return getById(giftCertificate.getId());
+    }
+
+    private GiftCertificate updateFields(GiftCertificate oldGiftCertificate, GiftCertificate newGiftCertificate) {
+        oldGiftCertificate.setName(newGiftCertificate.getName() == null
+                ? oldGiftCertificate.getName()
+                : newGiftCertificate.getName());
+        oldGiftCertificate.setDescription(newGiftCertificate.getDescription() == null
+                ? oldGiftCertificate.getName()
+                : newGiftCertificate.getDescription());
+        oldGiftCertificate.setPrice(newGiftCertificate.getPrice() == 0
+                ? oldGiftCertificate.getPrice()
+                : newGiftCertificate.getPrice());
+        oldGiftCertificate.setDuration(newGiftCertificate.getDuration() == 0
+                ? oldGiftCertificate.getDuration()
+                : newGiftCertificate.getDuration());
+
+        return newGiftCertificate;
+    }
+
+    /**
+     * Check tags existing, create if tag not found in DB, map tags to gift certificate
+     */
+    private void mapTagsToGiftCertificates(Set<Tag> tags, int giftCertificateId) {
+        Set<Tag> createdTags = new HashSet<>();
+        for (Tag t : tags) {
+            Tag tag = tagDAO.findByName(t.getName());
+            if (tag == null) {
+                tagDAO.create(t);
+                tag = tagDAO.findByName(t.getName());
+            }
+            createdTags.add(tag);
+        }
+        for (Tag t : createdTags)
+            giftCertificateToTagDAO.mapGiftCertificateToTag(giftCertificateId, t.getId());
     }
 }

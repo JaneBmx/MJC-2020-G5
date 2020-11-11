@@ -10,6 +10,10 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 class GiftCertificateDAOImplTest {
     private EmbeddedDatabase embeddedDatabase;
     private JdbcTemplate jdbcTemplate;
@@ -67,8 +71,8 @@ class GiftCertificateDAOImplTest {
 
         GiftCertificate changed = giftCertificateDAO.findById(1);
         Assertions.assertNotNull(changed);
-        Assertions.assertEquals(changed.getName(),"Zazazazaz" );
-        Assertions.assertEquals(changed.getDescription(),"Eheheheh" );
+        Assertions.assertEquals(changed.getName(), "Zazazazaz");
+        Assertions.assertEquals(changed.getDescription(), "Eheheheh");
         Assertions.assertEquals(changed.getPrice(), 2);
         Assertions.assertEquals(changed.getDuration(), 4);
     }
@@ -92,7 +96,20 @@ class GiftCertificateDAOImplTest {
     }
 
     @Test
-    void findBy() {
+    void findBySortByName() {
+        Map<String, String> params = new HashMap<>();
+        params.put("SORT", "create_date");
+        params.put("ORDER", "ASC");
+        params.put("NAME", "Cerf");
+        params.put("DESCRIPTION", "desc");
 
+        List<GiftCertificate> certificates = giftCertificateDAO.findBy(params);
+        Assertions.assertNotNull(certificates);
+        Assertions.assertEquals(3, certificates.size());
+
+        Assertions.assertEquals(certificates.get(0).getName(),"Cerf1");
+        Assertions.assertEquals(certificates.get(0).getDescription(),"desc1");
+        Assertions.assertEquals(certificates.get(0).getPrice(),12.50);
+        Assertions.assertEquals(certificates.get(0).getDuration(),1);
     }
 }

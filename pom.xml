@@ -22,6 +22,7 @@
         <log4j.version>2.13.2</log4j.version>
         <javax-validator-version>2.0.0.Final</javax-validator-version>
         <jupiter.version>5.7.0</jupiter.version>
+        <h2.version>1.4.200</h2.version>
     </properties>
 
     <dependencies>
@@ -81,6 +82,12 @@
             <scope>test</scope>
         </dependency>
 
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>${h2.version}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>

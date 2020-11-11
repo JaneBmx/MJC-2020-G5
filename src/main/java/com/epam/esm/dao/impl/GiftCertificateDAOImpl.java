@@ -10,10 +10,10 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -76,9 +76,9 @@ public class GiftCertificateDAOImpl extends AbstractDAO<GiftCertificate> impleme
     }
 
     @Override
-    public void delete(int id) {
+    public int delete(int id) {
         try {
-            jdbcTemplate.update(DELETE_BY_ID_QUERY, id);
+            return jdbcTemplate.update(DELETE_BY_ID_QUERY, id);
         } catch (DataAccessException e) {
             throw new DAOException(e);
         }
@@ -106,40 +106,52 @@ public class GiftCertificateDAOImpl extends AbstractDAO<GiftCertificate> impleme
         }
     }
 
-    /*@TODO prosnis i napishi*/
     @Override
     public List<GiftCertificate> findBy(Map<String, String> params) {
-//        for (Map.Entry<String, MapSqlParameterSource> item : buildQuery(params).entrySet()) {
-//            return jdbcTemplate.query(item.getKey(), item.getValue(), mapper);
-//        }
+        Map<String, Object[]> ready = buildQuery(params);
+
+        for (Map.Entry<String, Object[]> item : ready.entrySet()) {
+            return jdbcTemplate.query(item.getKey(), mapper, item.getValue());
+        }
         return null;
     }
 
-    private Map<String, MapSqlParameterSource> buildQuery(Map<String, String> params) {
-        String sortType = params.get(SORT_TYPE) == null ? SORT_ASC : params.get(SORT_TYPE);
-        String name = params.get(NAME) == null ? "" : params.get(NAME);
-        MapSqlParameterSource queryParams = new MapSqlParameterSource();
+    /**
+     * Creating query with query params
+     *
+     * @param params Map <String, String> where key as search param
+     *               value as search value
+     *               SORT - search field (name or create_date allowed)
+     *               ORDER - result order (ASC or DESC allowed. default = ASC)
+     *               NAME - full or part of name for searching
+     *               DESCRIPTION - full or part of description for searching
+     * @return Map<String, Object [ ]> with key as a query
+     * and value as params for query
+     */
+    private Map<String, Object[]> buildQuery(Map<String, String> params) {
+        String sort = params.get(SORT);
+        String order = params.getOrDefault(ORDER, "");
+        String name = params.getOrDefault(NAME, "");
+        String description = params.getOrDefault(DESCRIPTION, "");
 
-        StringBuilder query = new StringBuilder("SELECT gift_certificate.* FROM gift_certificate");
-        if (params.get(SORT) != null) {
-            query.append("JOIN gift_certificate2tag ON gift_certificate.id = gift_certificate2tag.gift_certificate_id " +
-                    "JOIN tag ON tag.id = gift_certificate2tag.tag_id ");
+        List<String> paramsL = new ArrayList<>();
+        paramsL.add("%" + name + "%");
+        StringBuilder query = new StringBuilder("SELECT * FROM gift_certificate WHERE name like ? ");
+
+        if (description != null && !description.isEmpty()) {
+            query.append(" AND description LIKE ? ");
+            paramsL.add("%" + description + "%");
         }
-        query.append(" WHERE gift_certificate.description LIKE :description  " +
-                "AND gift_certificate.name LIKE :name ");
-        queryParams.addValue(DESCRIPTION, "%" + params.get(DESCRIPTION) + "%")
-                .addValue(NAME, "%" + name + "%");
-        if (params.get(TAG_NAME) != null) {
-            query.append("AND tag.id = (SELECT tag.id FROM tag WHERE tag.name = :tag_name)");
-            queryParams.addValue(TAG_NAME, params.get(TAG_NAME));
+
+        if (sort != null && !sort.isEmpty()) {
+            if (sort.equalsIgnoreCase("name"))
+                query.append(" ORDER BY name");
+            if (sort.equalsIgnoreCase("create_date"))
+                query.append(" ORDER BY create_date ");
         }
-        if (params.get(SORT) != null) {
-            query.append("ORDER BY :sort ").append(":sort_type");
-            queryParams.addValue(SORT, params.get(SORT)).addValue(SORT_TYPE, sortType);
-        }
-        query.append(";");
-        Map<String, MapSqlParameterSource> map = new HashMap<>();
-        map.put(query.toString(), queryParams);
+        query.append(order);
+        Map<String, Object[]> map = new HashMap<>();
+        map.put(query.toString(), paramsL.toArray());
 
         return map;
     }

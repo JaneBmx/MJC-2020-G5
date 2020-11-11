@@ -1,8 +1,11 @@
 package com.epam.esm.validation;
 
 import com.epam.esm.entity.GiftCertificate;
+import org.springframework.validation.Errors;
+import org.springframework.validation.ValidationUtils;
+import org.springframework.validation.Validator;
 
-public class GiftCertificateRequestParamValidator {
+public class GiftCertificateRequestParamValidator implements Validator {
     private static final int MIN_NAME_LENGTH = 2;
     private static final int MIN_DURATION_PER_DAYS = 1;
 
@@ -28,5 +31,24 @@ public class GiftCertificateRequestParamValidator {
 
     public boolean isValidDuration(int duration) {
         return duration >= MIN_DURATION_PER_DAYS;
+    }
+
+    @Override
+    public boolean supports(Class<?> clazz) {
+        return GiftCertificate.class.equals(clazz);
+    }
+
+    @Override
+    public void validate(Object target, Errors errors) {
+        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "name.empty");
+        ValidationUtils.rejectIfEmpty(errors, "description", "description.empty");
+
+        GiftCertificate giftCertificate = (GiftCertificate) target;
+        if (giftCertificate.getPrice()<=0){
+            errors.rejectValue("price", "negativevalue");
+        }
+        if(giftCertificate.getDuration()<1){
+            errors.rejectValue("duration","negativevalue");
+        }
     }
 }

@@ -10,6 +10,7 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 
+import java.util.HashMap;
 import java.util.List;
 
 class TagDAOImplTest {
@@ -52,6 +53,8 @@ class TagDAOImplTest {
 
     @Test
     void findBy() {
+        Assertions.assertThrows(UnsupportedOperationException.class, () ->
+                tagDAO.findBy(new HashMap<>()));
     }
 
     @Test()
