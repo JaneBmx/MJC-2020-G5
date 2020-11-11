@@ -64,29 +64,37 @@ public class GiftCertificateServiceImpl implements ServiceInterface<GiftCertific
     @Transactional
     @Override
     public List<GiftCertificate> getBy(Map<String, String> params) {
-        List<GiftCertificate> certificates = giftCertificateDAO.findBy(params);
-        certificates.forEach(c -> {
-            List<Tag> tags = tagDAO.findByCertificateId(c.getId());
-            c.getTags().addAll(tags);
-        });
+        try {
+            List<GiftCertificate> certificates = giftCertificateDAO.findBy(params);
+            certificates.forEach(c -> {
+                List<Tag> tags = tagDAO.findByCertificateId(c.getId());
+                c.getTags().addAll(tags);
+            });
 
-        return certificates;
+            return certificates;
+        } catch (DAOException e) {
+            throw new ServiceException(e);
+        }
     }
 
     @Override
     @Transactional(isolation = Isolation.READ_UNCOMMITTED)
     public GiftCertificate update(GiftCertificate certificate) {
-        GiftCertificate oldGiftCertificate  = giftCertificateDAO.findById(certificate.getId());
+        try {
+            GiftCertificate oldGiftCertificate = giftCertificateDAO.findById(certificate.getId());
             if (oldGiftCertificate == null)
                 throw new ItemNotFoundException("Update failed! Gift certificate not found!");
 
-        giftCertificateDAO.update(updateFields(oldGiftCertificate, certificate));
+            giftCertificateDAO.update(updateFields(oldGiftCertificate, certificate));
 
-        giftCertificateToTagDAO.deleteByGiftCertificateId(certificate.getId());
-        if (certificate.getTags() != null && !certificate.getTags().isEmpty())
-            mapTagsToGiftCertificates(certificate.getTags(), oldGiftCertificate.getId());
+            giftCertificateToTagDAO.deleteByGiftCertificateId(certificate.getId());
+            if (certificate.getTags() != null && !certificate.getTags().isEmpty())
+                mapTagsToGiftCertificates(certificate.getTags(), oldGiftCertificate.getId());
 
-        return getById(oldGiftCertificate.getId());
+            return getById(oldGiftCertificate.getId());
+        }catch (DAOException e){
+            throw new ServiceException(e);
+        }
     }
 
     @Override

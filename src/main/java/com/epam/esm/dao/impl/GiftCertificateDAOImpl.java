@@ -108,10 +108,15 @@ public class GiftCertificateDAOImpl extends AbstractDAO<GiftCertificate> impleme
 
     @Override
     public List<GiftCertificate> findBy(Map<String, String> params) {
-        Map<String, Object[]> ready = buildQuery(params);
-
-        for (Map.Entry<String, Object[]> item : ready.entrySet()) {
-            return jdbcTemplate.query(item.getKey(), mapper, item.getValue());
+        try {
+            Map<String, Object[]> ready = buildQuery(params);
+            for (Map.Entry<String, Object[]> item : ready.entrySet()) {
+                return jdbcTemplate.query(item.getKey(), mapper, item.getValue());
+            }
+        } catch (IncorrectResultSizeDataAccessException e) {
+            return null;
+        } catch (DataAccessException e) {
+            throw new DAOException(e);
         }
         return null;
     }

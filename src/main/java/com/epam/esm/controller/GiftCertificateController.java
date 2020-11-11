@@ -6,6 +6,7 @@ import com.epam.esm.entity.GiftCertificate;
 import com.epam.esm.exception.ItemNotFoundException;
 import com.epam.esm.exception.RequestParamsNotValidException;
 import com.epam.esm.services.ServiceInterface;
+import com.epam.esm.util.Fields;
 import com.epam.esm.validation.GiftCertificateRequestParamValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -50,10 +51,10 @@ public class GiftCertificateController {
 
     @PutMapping("/certificates/")
     public GiftCertificate update(@RequestBody GiftCertificate certificate) {
-        if(!validator.isValidGiftCertificate(certificate))
+        if (!validator.isValidGiftCertificate(certificate))
             throw new RequestParamsNotValidException("Gift certificate can't be updated! Params not valid!");
 
-         return service.update(certificate);
+        return service.update(certificate);
     }
 
     @DeleteMapping("/certificates/{id}")
@@ -64,25 +65,27 @@ public class GiftCertificateController {
     }
 
     @GetMapping("/certificates/find")
-    public List<GiftCertificate> findCertificates(
-            @RequestParam(name = NAME, required = false) String name,
-            @RequestParam(name = DESCRIPTION, required = false) String description,
-            @RequestParam(name = SORT, required = false) String sort,
-            @RequestParam(name = SORT_TYPE, required = false) String sortType,
-            @RequestParam(name = TAG_NAME, required = false) String tagName
-    ) {
-        Map<String, String> params = new HashMap<>();
-        if (name != null)
-            params.put(NAME, name);
-        if (description != null)
-            params.put(DESCRIPTION, description);
-        if (sort != null)
-            params.put(SORT, sort);
-        if (sortType != null)
-            params.put(SORT_TYPE, sortType);
-        if (tagName != null)
-            params.put(TAG_NAME, tagName);
+    public List<GiftCertificate> findTags(@RequestParam(name = Fields.NAME, required = false) String name,
+                                          @RequestParam(name = Fields.SORT, required = false) String sort,
+                                          @RequestParam(name = Fields.SORT_TYPE, required = false) String sortType,
+                                          @RequestParam(name = Fields.DESCRIPTION, required = false) String description,
+                                          @RequestParam(name = Fields.ORDER, required = false) String order) {
+        return service.getBy(mapParams(name, sort, sortType, description, order));
+    }
 
-        return service.getBy(params);
+    private Map<String, String> mapParams(String name, String sort, String sortType, String description, String order) {
+        Map<String, String> params = new HashMap<>();
+        if (name != null && !name.isEmpty())
+            params.put(Fields.NAME, name);
+        if (sort != null && !sort.isEmpty())
+            params.put(Fields.SORT, sort);
+        if (sortType != null && !sortType.isEmpty())
+            params.put(Fields.SORT_TYPE, sortType);
+        if (description != null && !description.isEmpty())
+            params.put(Fields.DESCRIPTION, description);
+        if (order != null && !order.isEmpty())
+            params.put(Fields.ORDER, order);
+
+        return params;
     }
 }

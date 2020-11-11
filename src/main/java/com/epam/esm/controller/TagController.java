@@ -57,26 +57,14 @@ public class TagController {
     }
 
     @GetMapping("/tags/find")
-    public List<Tag> findTags(@RequestParam(name = Fields.NAME, required = false) String name,
-                              @RequestParam(name = Fields.SORT, required = false) String sort,
-                              @RequestParam(name = Fields.SORT_TYPE, required = false) String sortType,
-                              @RequestParam(name = Fields.DESCRIPTION, required = false) String description,
-                              @RequestParam(name = Fields.ORDER, required = false) String order) {
-        return tagService.getBy(mapParams(name, sort, sortType, description, order));
+    public Tag findTags(@RequestParam(name = Fields.NAME, required = false) String name) {
+        return tagService.getBy(mapParams(name)).get(0);
     }
 
-    private Map<String, String> mapParams(String name, String sort, String sortType, String description, String order) {
+    private Map<String, String> mapParams(String name) {
         Map<String, String> params = new HashMap<>();
         if (name != null && !name.isEmpty())
             params.put(Fields.NAME, name);
-        if (sort != null && !sort.isEmpty())
-            params.put(Fields.SORT, sort);
-        if (sortType != null && !sortType.isEmpty())
-            params.put(Fields.SORT_TYPE, sortType);
-        if (description != null && !description.isEmpty())
-            params.put(Fields.DESCRIPTION, description);
-        if (order != null && !order.isEmpty())
-            params.put(Fields.ORDER, order);
 
         return params;
     }
