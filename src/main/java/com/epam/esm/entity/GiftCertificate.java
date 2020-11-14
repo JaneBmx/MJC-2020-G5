@@ -1,19 +1,32 @@
 package com.epam.esm.entity;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
 public class GiftCertificate {
     private int id;
+
+    @NotBlank(message = "Name can't be empty")
     private String name;
+
+    @NotBlank(message = "Description can't be empty")
     private String description;
+
+    @Positive(message = "Price should be positive")
     private double price;
+
     private String createDate;
+
     private String lastUpdateDate;
+
+    @Positive(message = "Duration should be positive")
     private int duration;
 
-    private Set<Tag> tags = new HashSet<>();
+    private Set<@NotNull Tag> tags = new HashSet<>();
 
     public int getId() {
         return id;

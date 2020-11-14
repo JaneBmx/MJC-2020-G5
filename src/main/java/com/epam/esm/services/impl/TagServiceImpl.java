@@ -2,7 +2,6 @@ package com.epam.esm.services.impl;
 
 import com.epam.esm.dao.DAOInterface;
 import com.epam.esm.dao.GiftCertificateToTagDAO;
-import com.epam.esm.dao.impl.TagDAOImpl;
 import com.epam.esm.entity.Tag;
 import com.epam.esm.exception.DAOException;
 import com.epam.esm.exception.ItemNotFoundException;
@@ -20,14 +19,11 @@ import java.util.Map;
 
 @Service
 public class TagServiceImpl implements ServiceInterface<Tag> {
-    private final DAOInterface<Tag> tagDao;
-    private final GiftCertificateToTagDAO giftCertificateToTagDAO;
+    @Autowired
+    private DAOInterface<Tag> tagDao;
 
     @Autowired
-    public TagServiceImpl(TagDAOImpl tagDao, GiftCertificateToTagDAO giftCertificateToTagDAO) {
-        this.tagDao = tagDao;
-        this.giftCertificateToTagDAO = giftCertificateToTagDAO;
-    }
+    private GiftCertificateToTagDAO giftCertificateToTagDAO;
 
     @Override
     @Transactional

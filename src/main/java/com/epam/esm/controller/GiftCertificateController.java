@@ -1,13 +1,10 @@
 package com.epam.esm.controller;
 
-import static com.epam.esm.util.Fields.*;
-
 import com.epam.esm.entity.GiftCertificate;
 import com.epam.esm.exception.ItemNotFoundException;
-import com.epam.esm.exception.RequestParamsNotValidException;
 import com.epam.esm.services.ServiceInterface;
 import com.epam.esm.util.Fields;
-import com.epam.esm.validation.GiftCertificateRequestParamValidator;
+import com.epam.esm.validation.ValidationUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,14 +15,8 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api")
 public class GiftCertificateController {
-    private final ServiceInterface<GiftCertificate> service;
-    private final GiftCertificateRequestParamValidator validator;
-
     @Autowired
-    public GiftCertificateController(ServiceInterface<GiftCertificate> service) {
-        this.service = service;
-        validator = new GiftCertificateRequestParamValidator();
-    }
+    private ServiceInterface<GiftCertificate> service;
 
     @GetMapping("/certificates")
     public List<GiftCertificate> getGiftCertificates() {
@@ -43,16 +34,13 @@ public class GiftCertificateController {
 
     @PostMapping("/certificates/")
     public GiftCertificate add(@RequestBody GiftCertificate certificate) {
-        if (!validator.isValidGiftCertificate(certificate))
-            throw new RequestParamsNotValidException("Gift certificate can't be created! Params not valid!");
-
+        ValidationUtil.validate(certificate);
         return service.save(certificate);
     }
 
     @PutMapping("/certificates/")
     public GiftCertificate update(@RequestBody GiftCertificate certificate) {
-        if (!validator.isValidGiftCertificate(certificate))
-            throw new RequestParamsNotValidException("Gift certificate can't be updated! Params not valid!");
+        ValidationUtil.validate(certificate);
 
         return service.update(certificate);
     }

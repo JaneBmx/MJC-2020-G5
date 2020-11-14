@@ -1,11 +1,11 @@
 package com.epam.esm.controller;
 
 import com.epam.esm.entity.Tag;
-import com.epam.esm.exception.RequestParamsNotValidException;
 import com.epam.esm.exception.ItemNotFoundException;
 import com.epam.esm.services.ServiceInterface;
 import com.epam.esm.util.Fields;
-import com.epam.esm.validation.TagRequestParamValidator;
+import com.epam.esm.validation.ValidationUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -15,13 +15,8 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api")
 public class TagController {
-    private final ServiceInterface<Tag> tagService;
-    private final TagRequestParamValidator validator;
-
-    public TagController(ServiceInterface<Tag> tagService) {
-        this.tagService = tagService;
-        validator = new TagRequestParamValidator();
-    }
+    @Autowired
+    private ServiceInterface<Tag> tagService;
 
     @GetMapping("/tags")
     public List<Tag> getTags() {
@@ -43,8 +38,7 @@ public class TagController {
 
     @PostMapping("/tags")
     public Tag add(@RequestBody Tag tag) {
-        if (!validator.isValidTag(tag))
-            throw new RequestParamsNotValidException("Tag params not valid!");
+        ValidationUtil.validate(tag);
 
         return tagService.save(tag);
     }

@@ -2,7 +2,6 @@ package com.epam.esm.services.impl;
 
 import com.epam.esm.dao.DAOInterface;
 import com.epam.esm.dao.GiftCertificateToTagDAO;
-import com.epam.esm.dao.impl.GiftCertificateDAOImpl;
 import com.epam.esm.dao.impl.TagDAOImpl;
 import com.epam.esm.entity.GiftCertificate;
 import com.epam.esm.entity.Tag;
@@ -10,6 +9,7 @@ import com.epam.esm.exception.DAOException;
 import com.epam.esm.exception.ItemNotFoundException;
 import com.epam.esm.exception.ServiceException;
 import com.epam.esm.services.ServiceInterface;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,17 +18,14 @@ import java.util.*;
 
 @Service
 public class GiftCertificateServiceImpl implements ServiceInterface<GiftCertificate> {
-    private final DAOInterface<GiftCertificate> giftCertificateDAO;
-    private final GiftCertificateToTagDAO giftCertificateToTagDAO;
-    private final TagDAOImpl tagDAO;
+    @Autowired
+    private  DAOInterface<GiftCertificate> giftCertificateDAO;
 
-    public GiftCertificateServiceImpl(GiftCertificateDAOImpl giftCertificateDAO,
-                                      TagDAOImpl tagDAO,
-                                      GiftCertificateToTagDAO giftCertificateToTagDAO) {
-        this.giftCertificateDAO = giftCertificateDAO;
-        this.tagDAO = tagDAO;
-        this.giftCertificateToTagDAO = giftCertificateToTagDAO;
-    }
+    @Autowired
+    private  GiftCertificateToTagDAO giftCertificateToTagDAO;
+
+    @Autowired
+    private  TagDAOImpl tagDAO;
 
     @Transactional
     @Override

@@ -1,9 +1,12 @@
 package com.epam.esm.entity;
 
+import javax.validation.constraints.NotBlank;
 import java.util.Objects;
 
 public class Tag {
     private int id;
+
+    @NotBlank(message = "Name can't be empty")
     private String name;
 
     public Tag() {
