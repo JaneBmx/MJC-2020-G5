@@ -9,7 +9,6 @@ import java.sql.SQLException;
 import static com.epam.esm.util.Fields.*;
 
 public class TagMapper implements RowMapper<Tag> {
-
     @Override
     public Tag mapRow(ResultSet resultSet, int i) throws SQLException {
         Tag tag = new Tag();

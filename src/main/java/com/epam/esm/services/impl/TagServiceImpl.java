@@ -19,11 +19,15 @@ import java.util.Map;
 
 @Service
 public class TagServiceImpl implements ServiceInterface<Tag> {
-    @Autowired
-    private DAOInterface<Tag> tagDao;
+    private final DAOInterface<Tag> tagDao;
+
+    private final GiftCertificateToTagDAO giftCertificateToTagDAO;
 
     @Autowired
-    private GiftCertificateToTagDAO giftCertificateToTagDAO;
+    public TagServiceImpl(DAOInterface<Tag> tagDao, GiftCertificateToTagDAO giftCertificateToTagDAO) {
+        this.tagDao = tagDao;
+        this.giftCertificateToTagDAO = giftCertificateToTagDAO;
+    }
 
     @Override
     @Transactional
@@ -55,8 +59,9 @@ public class TagServiceImpl implements ServiceInterface<Tag> {
     public void delete(int id) {
         try {
             Tag tag = tagDao.findById(id);
-            if (tag == null)
+            if (tag == null) {
                 throw new ItemNotFoundException("Tag with id " + id + " not found!");
+            }
 
             giftCertificateToTagDAO.deleteByTagId(id);
             tagDao.delete(id);
@@ -87,9 +92,9 @@ public class TagServiceImpl implements ServiceInterface<Tag> {
     }
 
     public Tag getByName(String name) {
-        if (name == null || name.isEmpty())
+        if (name == null || name.isEmpty()) {
             throw new RequestParamsNotValidException("Tag not found! Empty tag name!");
-
+        }
         return tagDao.findByName(name);
 
     }
@@ -98,13 +103,13 @@ public class TagServiceImpl implements ServiceInterface<Tag> {
     public List<Tag> getBy(Map<String, String> params) {
         try {
             String name = params.get("name");
-            if(name == null || name.isEmpty())
+            if (name == null || name.isEmpty()) {
                 throw new RequestParamsNotValidException("Tag not found. Empty tag name");
-
+            }
             Tag tag = tagDao.findByName(params.get("name"));
-            if (tag == null)
+            if (tag == null) {
                 throw new ItemNotFoundException("Tag with name " + params.get("name") + " not found!");
-
+            }
             List<Tag> tags = new ArrayList<>();
             tags.add(tag);
             return tags;

@@ -11,7 +11,6 @@ import java.time.format.DateTimeFormatter;
 import static com.epam.esm.util.Fields.*;
 
 public class CertificateMapper implements RowMapper<GiftCertificate> {
-
     @Override
     public GiftCertificate mapRow(ResultSet resultSet, int i) throws SQLException {
         GiftCertificate certificate = new GiftCertificate();

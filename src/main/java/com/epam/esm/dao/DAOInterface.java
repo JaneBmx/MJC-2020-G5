@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Map;
 
 public interface DAOInterface<T> {
-
     void create(T t);
 
     List<T> findAll();

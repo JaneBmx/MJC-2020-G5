@@ -15,8 +15,12 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api")
 public class GiftCertificateController {
+    private final ServiceInterface<GiftCertificate> service;
+
     @Autowired
-    private ServiceInterface<GiftCertificate> service;
+    public GiftCertificateController(ServiceInterface<GiftCertificate> service) {
+        this.service = service;
+    }
 
     @GetMapping("/certificates")
     public List<GiftCertificate> getGiftCertificates() {

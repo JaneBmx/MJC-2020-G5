@@ -5,6 +5,7 @@ import com.epam.esm.dao.DAOInterface;
 import com.epam.esm.dao.mappers.CertificateMapper;
 import com.epam.esm.entity.GiftCertificate;
 import com.epam.esm.exception.DAOException;
+import javafx.util.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DuplicateKeyException;
@@ -14,7 +15,6 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -109,16 +109,13 @@ public class GiftCertificateDAOImpl extends AbstractDAO<GiftCertificate> impleme
     @Override
     public List<GiftCertificate> findBy(Map<String, String> params) {
         try {
-            Map<String, Object[]> ready = buildQuery(params);
-            for (Map.Entry<String, Object[]> item : ready.entrySet()) {
-                return jdbcTemplate.query(item.getKey(), mapper, item.getValue());
-            }
+            Pair<String, Object[]> ready = buildQuery(params);
+            return jdbcTemplate.query(ready.getKey(), mapper, ready.getValue());
         } catch (IncorrectResultSizeDataAccessException e) {
             return null;
         } catch (DataAccessException e) {
             throw new DAOException(e);
         }
-        return null;
     }
 
     /**
@@ -133,7 +130,7 @@ public class GiftCertificateDAOImpl extends AbstractDAO<GiftCertificate> impleme
      * @return Map<String, Object [ ]> with key as a query
      * and value as params for query
      */
-    private Map<String, Object[]> buildQuery(Map<String, String> params) {
+    private Pair<String, Object[]> buildQuery(Map<String, String> params) {
         String sort = params.get(SORT);
         String order = params.getOrDefault(ORDER, "");
         String name = params.getOrDefault(NAME, "");
@@ -149,15 +146,15 @@ public class GiftCertificateDAOImpl extends AbstractDAO<GiftCertificate> impleme
         }
 
         if (sort != null && !sort.isEmpty()) {
-            if (sort.equalsIgnoreCase("name"))
+            if (sort.equalsIgnoreCase("name")) {
                 query.append(" ORDER BY name");
-            if (sort.equalsIgnoreCase("create_date"))
+            }
+            if (sort.equalsIgnoreCase("create_date")) {
                 query.append(" ORDER BY create_date ");
+            }
         }
         query.append(order);
-        Map<String, Object[]> map = new HashMap<>();
-        map.put(query.toString(), paramsL.toArray());
 
-        return map;
+        return new Pair<>(query.toString(), paramsL.toArray());
     }
 }

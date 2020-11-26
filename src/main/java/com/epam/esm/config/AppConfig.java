@@ -4,11 +4,8 @@ import com.mchange.v2.c3p0.ComboPooledDataSource;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.core.env.Environment;
+import org.springframework.context.annotation.*;
+import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -20,15 +17,23 @@ import java.beans.PropertyVetoException;
 @Configuration
 @EnableWebMvc
 @ComponentScan(basePackages = "com.epam.esm")
-@PropertySource("classpath:dev-db.properties")
+@PropertySources({
+        @PropertySource("classpath:dev-db.properties"),
+        @PropertySource("classpath:prod-db.properties"),
+        @PropertySource("classpath:env.properties"),
+})
 public class AppConfig {
     private static final Logger LOGGER = LogManager.getLogger(AppConfig.class);
-    private final Environment env;
+    private final ConfigurableEnvironment env;
 
-    public AppConfig(Environment env) {
+    @Autowired
+    public AppConfig(ConfigurableEnvironment env) {
         this.env = env;
+        this.env.setActiveProfiles(this.env.getProperty("env"));
+        this.env.setDefaultProfiles(this.env.getProperty("env"));
     }
 
+    @Profile("dev")
     @Bean
     public DataSource securityDataSource() {
         ComboPooledDataSource securityDataSource = new ComboPooledDataSource();
@@ -49,13 +54,14 @@ public class AppConfig {
     }
 
     @Bean
-    public PlatformTransactionManager txManager() {
-        return new DataSourceTransactionManager(securityDataSource());
+    @Autowired
+    public PlatformTransactionManager txManager(DataSource dataSource) {
+        return new DataSourceTransactionManager(dataSource);
     }
 
     @Bean
     @Autowired
-    public JdbcTemplate  getJdbcTemplate(DataSource dataSource){
+    public JdbcTemplate getJdbcTemplate(DataSource dataSource) {
         return new JdbcTemplate(dataSource);
     }
 }

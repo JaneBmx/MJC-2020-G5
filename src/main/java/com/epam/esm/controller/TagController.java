@@ -15,8 +15,12 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api")
 public class TagController {
+    private final ServiceInterface<Tag> tagService;
+
     @Autowired
-    private ServiceInterface<Tag> tagService;
+    public TagController(ServiceInterface<Tag> tagService) {
+        this.tagService = tagService;
+    }
 
     @GetMapping("/tags")
     public List<Tag> getTags() {
