@@ -6,11 +6,15 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.*;
 import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.Environment;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.web.WebApplicationInitializer;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
 import javax.sql.DataSource;
 import java.beans.PropertyVetoException;
 
@@ -20,17 +24,22 @@ import java.beans.PropertyVetoException;
 @PropertySources({
         @PropertySource("classpath:dev-db.properties"),
         @PropertySource("classpath:prod-db.properties"),
-        @PropertySource("classpath:env.properties"),
 })
-public class AppConfig {
+public class AppConfig implements WebApplicationInitializer {
     private static final Logger LOGGER = LogManager.getLogger(AppConfig.class);
-    private final ConfigurableEnvironment env;
+    private Environment env;
+
+    public AppConfig(){}
 
     @Autowired
     public AppConfig(ConfigurableEnvironment env) {
         this.env = env;
-        this.env.setActiveProfiles(this.env.getProperty("env"));
-        this.env.setDefaultProfiles(this.env.getProperty("env"));
+    }
+
+    @Bean
+    @Autowired
+    public JdbcTemplate getJdbcTemplate(DataSource dataSource) {
+        return new JdbcTemplate(dataSource);
     }
 
     @Profile("dev")
@@ -59,9 +68,8 @@ public class AppConfig {
         return new DataSourceTransactionManager(dataSource);
     }
 
-    @Bean
-    @Autowired
-    public JdbcTemplate getJdbcTemplate(DataSource dataSource) {
-        return new JdbcTemplate(dataSource);
+    @Override
+    public void onStartup(ServletContext servletContext) throws ServletException {
+        servletContext.setInitParameter("spring.profiles.active", System.getenv("APP_ENV"));
     }
 }
