@@ -13,9 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class TagServiceImpl implements ServiceInterface<Tag> {
@@ -33,7 +31,7 @@ public class TagServiceImpl implements ServiceInterface<Tag> {
     @Transactional
     public List<Tag> getAll() {
         try {
-            return tagDao.findAll();
+            return tagDao.findAll().orElse(new ArrayList<>());
         } catch (DAOException e) {
             throw new ServiceException(e);
         }
@@ -43,7 +41,9 @@ public class TagServiceImpl implements ServiceInterface<Tag> {
     @Transactional
     public Tag getById(int id) {
         try {
-            return tagDao.findById(id);
+            return tagDao.findById(id).orElseThrow(()
+                    -> new ItemNotFoundException(String.format("Tag with id %d not found.", id))
+            );
         } catch (DAOException e) {
             throw new ServiceException(e);
         }
@@ -58,22 +58,22 @@ public class TagServiceImpl implements ServiceInterface<Tag> {
     @Transactional
     public void delete(int id) {
         try {
-            Tag tag = tagDao.findById(id);
-            if (tag == null) {
-                throw new ItemNotFoundException("Tag with id " + id + " not found!");
-            }
-
-            giftCertificateToTagDAO.deleteByTagId(id);
-            tagDao.delete(id);
+            Tag tag = tagDao.findById(id).orElseThrow(()
+                    -> new ItemNotFoundException(String.format("Tag with id %d not found.", id))
+            );
+            giftCertificateToTagDAO.deleteByTagId(tag.getId());
+            tagDao.delete(tag.getId());
         } catch (DAOException e) {
             throw new ServiceException(e);
         }
     }
 
     @Override
-    public void create(Tag tag) {
+    public Tag create(Tag tag) {
         try {
-            tagDao.create(tag);
+            return tagDao.create(tag).orElseThrow(()
+                    -> new ServiceException("Tag wasn't created. Try again later.")
+            );
         } catch (DAOException e) {
             throw new ServiceException(e);
         }
@@ -83,36 +83,25 @@ public class TagServiceImpl implements ServiceInterface<Tag> {
     @Transactional(isolation = Isolation.READ_UNCOMMITTED)
     public Tag save(Tag tag) {
         try {
-            tagDao.create(tag);
-
-            return tagDao.findByName(tag.getName());
+            return (tag.getId() == 0)
+                    ? create(tag)
+                    : update(tag);
         } catch (DAOException e) {
             throw new ServiceException(e);
         }
     }
 
-    public Tag getByName(String name) {
-        if (name == null || name.isEmpty()) {
-            throw new RequestParamsNotValidException("Tag not found! Empty tag name!");
-        }
-        return tagDao.findByName(name);
-
-    }
-
     @Override
     public List<Tag> getBy(Map<String, String> params) {
         try {
-            String name = params.get("name");
-            if (name == null || name.isEmpty()) {
-                throw new RequestParamsNotValidException("Tag not found. Empty tag name");
-            }
-            Tag tag = tagDao.findByName(params.get("name"));
-            if (tag == null) {
-                throw new ItemNotFoundException("Tag with name " + params.get("name") + " not found!");
-            }
-            List<Tag> tags = new ArrayList<>();
-            tags.add(tag);
-            return tags;
+            String name = Optional.of(params.get("name")).orElseThrow(()
+                    -> new RequestParamsNotValidException("Tag not found. Empty tag name"));
+
+            Tag tag = tagDao.findByName(params.get("name")).orElseThrow(()
+                    -> new ItemNotFoundException(String.format("Tag with name %s not found!", name))
+            );
+
+            return new ArrayList<>(Collections.singletonList(tag));
         } catch (DAOException e) {
             throw new ServiceException(e);
         }

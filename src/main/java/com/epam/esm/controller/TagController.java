@@ -1,7 +1,6 @@
 package com.epam.esm.controller;
 
 import com.epam.esm.entity.Tag;
-import com.epam.esm.exception.ItemNotFoundException;
 import com.epam.esm.services.ServiceInterface;
 import com.epam.esm.util.Fields;
 import com.epam.esm.validation.ValidationUtil;
@@ -24,20 +23,12 @@ public class TagController {
 
     @GetMapping("/tags")
     public List<Tag> getTags() {
-        List<Tag> tags = tagService.getAll();
-        if (tags == null || tags.isEmpty())
-            throw new ItemNotFoundException("No tags found!");
-
-        return tags;
+        return tagService.getAll();
     }
 
     @GetMapping("/tags/{id}")
     public Tag getTag(@PathVariable int id) {
-        Tag tag = tagService.getById(id);
-        if (tag == null)
-            throw new ItemNotFoundException("Tag with id " + id + " not found!");
-
-        return tag;
+        return tagService.getById(id);
     }
 
     @PostMapping("/tags")
@@ -51,7 +42,7 @@ public class TagController {
     public String delete(@PathVariable int id) {
         tagService.delete(id);
 
-        return "Tag with id " + id + " has been deleted";
+        return String.format("Tag with id %d has been deleted", id);
     }
 
     @GetMapping("/tags/find")

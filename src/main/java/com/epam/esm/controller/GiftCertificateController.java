@@ -1,7 +1,6 @@
 package com.epam.esm.controller;
 
 import com.epam.esm.entity.GiftCertificate;
-import com.epam.esm.exception.ItemNotFoundException;
 import com.epam.esm.services.ServiceInterface;
 import com.epam.esm.util.Fields;
 import com.epam.esm.validation.ValidationUtil;
@@ -29,11 +28,7 @@ public class GiftCertificateController {
 
     @GetMapping("/certificates/{id}")
     public GiftCertificate getById(@PathVariable int id) {
-        GiftCertificate giftCertificate = service.getById(id);
-        if (giftCertificate == null)
-            throw new ItemNotFoundException("GiftCertificate with id " + id + " not found!");
-
-        return giftCertificate;
+        return service.getById(id);
     }
 
     @PostMapping("/certificates/")
@@ -44,8 +39,6 @@ public class GiftCertificateController {
 
     @PutMapping("/certificates/")
     public GiftCertificate update(@RequestBody GiftCertificate certificate) {
-        ValidationUtil.validate(certificate);
-
         return service.update(certificate);
     }
 
@@ -53,7 +46,7 @@ public class GiftCertificateController {
     public String delete(@PathVariable int id) {
         service.delete(id);
 
-        return "Gift certificate with id " + id + " has been deleted";
+        return String.format("Gift certificate with id %d has been deleted", id);
     }
 
     @GetMapping("/certificates/find")
@@ -61,11 +54,12 @@ public class GiftCertificateController {
                                           @RequestParam(name = Fields.SORT, required = false) String sort,
                                           @RequestParam(name = Fields.SORT_TYPE, required = false) String sortType,
                                           @RequestParam(name = Fields.DESCRIPTION, required = false) String description,
-                                          @RequestParam(name = Fields.ORDER, required = false) String order) {
-        return service.getBy(mapParams(name, sort, sortType, description, order));
+                                          @RequestParam(name = Fields.ORDER, required = false) String order,
+                                          @RequestParam(name = Fields.TAG_NAME, required = false) String tagName) {
+        return service.getBy(mapParams(name, sort, sortType, description, order, tagName));
     }
 
-    private Map<String, String> mapParams(String name, String sort, String sortType, String description, String order) {
+    private Map<String, String> mapParams(String name, String sort, String sortType, String description, String order, String tagName) {
         Map<String, String> params = new HashMap<>();
         if (name != null && !name.isEmpty())
             params.put(Fields.NAME, name);
@@ -77,6 +71,8 @@ public class GiftCertificateController {
             params.put(Fields.DESCRIPTION, description);
         if (order != null && !order.isEmpty())
             params.put(Fields.ORDER, order);
+        if (tagName != null && !tagName.isEmpty())
+            params.put(Fields.TAG_NAME, tagName);
 
         return params;
     }

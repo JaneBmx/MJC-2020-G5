@@ -16,25 +16,25 @@ public class GiftCertificateToTagDAO extends AbstractDAO {
         super(jdbcTemplate, null);
     }
 
-    public void mapGiftCertificateToTag(int giftCertificateId, int tagId) {
+    public int mapGiftCertificateToTag(int giftCertificateId, int tagId) {
         try {
-            jdbcTemplate.update(CREATE_QUERY, giftCertificateId, tagId);
+            return jdbcTemplate.update(CREATE_QUERY, giftCertificateId, tagId);
         } catch (DataAccessException e) {
             throw new DAOException(e);
         }
     }
 
-    public void deleteByGiftCertificateId(int giftCertificateId) {
+    public int deleteByGiftCertificateId(int giftCertificateId) {
         try {
-            jdbcTemplate.update(DELETE_INDEXES_BY_GIFT_CERTIFICATE_QUERY, giftCertificateId);
+            return jdbcTemplate.update(DELETE_INDEXES_BY_GIFT_CERTIFICATE_QUERY, giftCertificateId);
         } catch (DataAccessException e) {
             throw new DAOException(e);
         }
     }
 
-    public void deleteByTagId(int tagId) {
+    public int deleteByTagId(int tagId) {
         try {
-            jdbcTemplate.update(DELETE_INDEXES_BY_TAG_ID_QUERY, tagId);
+            return jdbcTemplate.update(DELETE_INDEXES_BY_TAG_ID_QUERY, tagId);
         } catch (DataAccessException e) {
             throw new DAOException(e);
         }
