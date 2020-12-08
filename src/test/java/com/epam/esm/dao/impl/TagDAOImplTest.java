@@ -12,6 +12,7 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 
 class TagDAOImplTest {
     private EmbeddedDatabase embeddedDatabase;
@@ -38,8 +39,9 @@ class TagDAOImplTest {
         Tag tag = new Tag();
         tag.setName("SixthTag");
         tagDAO.create(tag);
-        tag = tagDAO.findByName("SixthTag");
-
+        Optional<Tag>tg = tagDAO.findByName("SixthTag");
+        Assertions.assertTrue(tg.isPresent());
+        tag = tg.get();
         Assertions.assertNotNull(tag);
         Assertions.assertNotEquals(tag.getId(), 0);
         Assertions.assertEquals("SixthTag", tag.getName());
@@ -47,8 +49,8 @@ class TagDAOImplTest {
 
     @Test
     void findAll() {
-        Assertions.assertNotNull(tagDAO.findAll());
-        Assertions.assertEquals(5, tagDAO.findAll().size());
+        Assertions.assertTrue(tagDAO.findAll().isPresent());
+        Assertions.assertEquals(5, tagDAO.findAll().get().size());
     }
 
     @Test
@@ -71,20 +73,21 @@ class TagDAOImplTest {
 
     @Test
     void findByCertificateId() {
-        List<Tag> tags = tagDAO.findByCertificateId(1);
+        Optional<List<Tag>> tags = tagDAO.findByCertificateId(1);
+        Assertions.assertTrue(tags.isPresent());
         Assertions.assertNotNull(tags);
-        Assertions.assertEquals(2, tags.size());
+        Assertions.assertEquals(2, tags.get().size());
     }
 
     @Test
     void findById() {
-        Assertions.assertNotNull(tagDAO.findById(1));
-        Assertions.assertNull(tagDAO.findById(88));
+        Assertions.assertTrue(tagDAO.findById(1).isPresent());
+        Assertions.assertFalse(tagDAO.findById(88).isPresent());
     }
 
     @Test
     void findByName() {
-        Assertions.assertNotNull(tagDAO.findByName("FirstTag"));
-        Assertions.assertNull(tagDAO.findByName("NonExistingTag"));
+        Assertions.assertTrue(tagDAO.findByName("FirstTag").isPresent());
+        Assertions.assertFalse(tagDAO.findByName("NonExistingTag").isPresent());
     }
 }

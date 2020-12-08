@@ -9,6 +9,7 @@ import com.epam.esm.exception.DAOException;
 import com.epam.esm.exception.ItemNotFoundException;
 import com.epam.esm.exception.ServiceException;
 import com.epam.esm.services.ServiceInterface;
+import com.epam.esm.validation.ValidationUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
@@ -34,29 +35,28 @@ public class GiftCertificateServiceImpl implements ServiceInterface<GiftCertific
     @Transactional
     @Override
     public List<GiftCertificate> getAll() {
-        List<GiftCertificate> certificates = giftCertificateDAO.findAll();
+        Optional<List<GiftCertificate>> certificates = giftCertificateDAO.findAll();
 
-        certificates.forEach(c -> {
-            List<Tag> tags = tagDAO.findByCertificateId(c.getId());
-            c.getTags().addAll(tags);
+        if (!certificates.isPresent()) {
+            return new ArrayList<>();
+        }
+
+        List<GiftCertificate> giftCertificates = certificates.get();
+        giftCertificates.forEach(c -> {
+            Optional<List<Tag>> tags = tagDAO.findByCertificateId(c.getId());
+            c.getTags().addAll(tags.orElseGet(ArrayList::new));
         });
 
-        return certificates;
+        return giftCertificates;
     }
 
     @Transactional
     @Override
     public GiftCertificate getById(int id) {
         try {
-            GiftCertificate giftCertificate = giftCertificateDAO.findById(id);
-            if (giftCertificate == null) {
-                throw new ItemNotFoundException("Gift certificate with id " + id + " not found!");
-            }
-
-            List<Tag> tags = tagDAO.findByCertificateId(id);
-            if (tags != null && !tags.isEmpty()) {
-                giftCertificate.getTags().addAll(tags);
-            }
+            GiftCertificate giftCertificate = giftCertificateDAO.findById(id).orElseThrow(()
+                    -> new ItemNotFoundException(String.format("Gift certificate with id %d not found!", id)));
+            giftCertificate.getTags().addAll(tagDAO.findByCertificateId(id).orElseGet(ArrayList::new));
 
             return giftCertificate;
         } catch (DAOException e) {
@@ -68,13 +68,19 @@ public class GiftCertificateServiceImpl implements ServiceInterface<GiftCertific
     @Override
     public List<GiftCertificate> getBy(Map<String, String> params) {
         try {
-            List<GiftCertificate> certificates = giftCertificateDAO.findBy(params);
-            certificates.forEach(c -> {
-                List<Tag> tags = tagDAO.findByCertificateId(c.getId());
-                c.getTags().addAll(tags);
+            Optional<List<GiftCertificate>> certificates = giftCertificateDAO.findBy(params);
+
+            if (!certificates.isPresent()) {
+                return new ArrayList<>();
+            }
+
+            List<GiftCertificate> giftCertificates = certificates.get();
+            giftCertificates.forEach(c -> {
+                Optional<List<Tag>> tags = tagDAO.findByCertificateId(c.getId());
+                c.getTags().addAll(tags.orElseGet(ArrayList::new));
             });
 
-            return certificates;
+            return giftCertificates;
         } catch (DAOException e) {
             throw new ServiceException(e);
         }
@@ -84,19 +90,24 @@ public class GiftCertificateServiceImpl implements ServiceInterface<GiftCertific
     @Transactional
     public GiftCertificate update(GiftCertificate certificate) {
         try {
-            GiftCertificate oldGiftCertificate = giftCertificateDAO.findById(certificate.getId());
-            if (oldGiftCertificate == null) {
-                throw new ItemNotFoundException("Update failed! Gift certificate not found!");
-            }
+            GiftCertificate oldGiftCertificate = giftCertificateDAO.findById(certificate.getId()).orElseThrow(()
+                    -> new ItemNotFoundException(String.format("Update failed. Gift certificate with id %d not found."
+                    , certificate.getId())));
 
-            giftCertificateDAO.update(updateFields(oldGiftCertificate, certificate));
+
+            oldGiftCertificate
+                    = giftCertificateDAO.update(validateAndUpdateFields(oldGiftCertificate, certificate)).orElseThrow(()
+                    -> new ServiceException("Update failed. Try again later."));
 
             giftCertificateToTagDAO.deleteByGiftCertificateId(certificate.getId());
-            if (certificate.getTags() != null && !certificate.getTags().isEmpty()) {
+            if (!certificate.getTags().isEmpty()) {
                 mapTagsToGiftCertificates(certificate.getTags(), oldGiftCertificate.getId());
             }
 
-            return getById(oldGiftCertificate.getId());
+            oldGiftCertificate.setTags(new HashSet<>(tagDAO.findByCertificateId(oldGiftCertificate.getId())
+                    .orElse(new ArrayList<>())));
+
+            return oldGiftCertificate;
         } catch (DAOException e) {
             throw new ServiceException(e);
         }
@@ -106,10 +117,10 @@ public class GiftCertificateServiceImpl implements ServiceInterface<GiftCertific
     @Transactional
     public void delete(int id) {
         try {
-            GiftCertificate giftCertificate = giftCertificateDAO.findById(id);
-            if (giftCertificate == null) {
-                throw new ItemNotFoundException("Not deleted! GiftCertificate with id " + id + " not found!");
-            }
+            GiftCertificate giftCertificate = giftCertificateDAO.findById(id).orElseThrow(()
+                    -> new ItemNotFoundException(
+                    String.format("Not deleted! GiftCertificate with id %d not found!", id)));
+
             giftCertificateToTagDAO.deleteByGiftCertificateId(giftCertificate.getId());
 
             giftCertificateDAO.delete(id);
@@ -120,40 +131,34 @@ public class GiftCertificateServiceImpl implements ServiceInterface<GiftCertific
 
     @Override
     @Transactional(isolation = Isolation.READ_UNCOMMITTED)
-    public void create(GiftCertificate giftCertificate) {
+    public GiftCertificate create(GiftCertificate giftCertificate) {
         try {
-            giftCertificateDAO.create(giftCertificate);
-            GiftCertificate createdGiftCertificate = giftCertificateDAO.findByName(giftCertificate.getName());
+            GiftCertificate createdGiftCertificate = giftCertificateDAO.create(giftCertificate).orElseThrow(()
+                    -> new ServiceException("Can't create giftCertificate. Try again later."));
 
-            if (giftCertificate.getTags() != null && !giftCertificate.getTags().isEmpty()) {
+            if (!giftCertificate.getTags().isEmpty()) {
                 mapTagsToGiftCertificates(giftCertificate.getTags(), createdGiftCertificate.getId());
             }
+
+            createdGiftCertificate
+                    .setTags(new HashSet<>(tagDAO.findByCertificateId(createdGiftCertificate.getId())
+                            .orElse(new ArrayList<>())));
+
+            return createdGiftCertificate;
         } catch (DAOException e) {
             throw new ServiceException(e);
         }
     }
 
     @Override
-    @Transactional(isolation = Isolation.READ_UNCOMMITTED)
+    @Transactional
     public GiftCertificate save(GiftCertificate giftCertificate) {
-        if (giftCertificate.getId() == 0) {
-            create(giftCertificate);
-
-            GiftCertificate createdGiftCertificate = giftCertificateDAO.findByName(giftCertificate.getName());
-            List<Tag> tags = tagDAO.findByCertificateId(createdGiftCertificate.getId());
-
-            if (tags != null && !tags.isEmpty()) {
-                createdGiftCertificate.setTags(new HashSet<>(tags));
-            }
-
-            return createdGiftCertificate;
-        }
-        update(giftCertificate);
-
-        return getById(giftCertificate.getId());
+        return (giftCertificate.getId() == 0)
+                ? create(giftCertificate)
+                : update(giftCertificate);
     }
 
-    private GiftCertificate updateFields(GiftCertificate oldGiftCertificate, GiftCertificate newGiftCertificate) {
+    private GiftCertificate validateAndUpdateFields(GiftCertificate oldGiftCertificate, GiftCertificate newGiftCertificate) {
         oldGiftCertificate.setName(newGiftCertificate.getName() == null
                 ? oldGiftCertificate.getName()
                 : newGiftCertificate.getName());
@@ -167,7 +172,9 @@ public class GiftCertificateServiceImpl implements ServiceInterface<GiftCertific
                 ? oldGiftCertificate.getDuration()
                 : newGiftCertificate.getDuration());
 
-        return newGiftCertificate;
+        ValidationUtil.validate(oldGiftCertificate);
+
+        return oldGiftCertificate;
     }
 
     /**
@@ -176,13 +183,13 @@ public class GiftCertificateServiceImpl implements ServiceInterface<GiftCertific
     private void mapTagsToGiftCertificates(Set<Tag> tags, int giftCertificateId) {
         Set<Tag> createdTags = new HashSet<>();
         for (Tag t : tags) {
-            Tag tag = tagDAO.findByName(t.getName());
-            if (tag == null) {
-                tagDAO.create(t);
-                tag = tagDAO.findByName(t.getName());
+            Optional<Tag> tag = tagDAO.findByName(t.getName());
+            if (!tag.isPresent()) {
+                tag = tagDAO.create(t);
             }
-            createdTags.add(tag);
+            createdTags.add(tag.get());
         }
+
         for (Tag t : createdTags) {
             giftCertificateToTagDAO.mapGiftCertificateToTag(giftCertificateId, t.getId());
         }

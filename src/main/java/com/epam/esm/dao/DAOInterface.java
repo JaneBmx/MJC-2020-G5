@@ -2,19 +2,20 @@ package com.epam.esm.dao;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public interface DAOInterface<T> {
-    void create(T t);
+    Optional<T> create(T t);
 
-    List<T> findAll();
+    Optional<List<T>> findAll();
 
-    List<T> findBy(Map<String, String> params);
+    Optional<List<T>> findBy(Map<String, String> params);
 
     int delete(int id);
 
-    void update(T t);
+    Optional<T> update(T t);
 
-    T findById(int id);
+    Optional<T> findById(int id);
 
-    T findByName(String name);
+    Optional<T> findByName(String name);
 }

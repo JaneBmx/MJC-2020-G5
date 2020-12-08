@@ -17,6 +17,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static com.epam.esm.util.Fields.*;
 
@@ -35,7 +36,7 @@ public class GiftCertificateDAOImpl extends AbstractDAO<GiftCertificate> impleme
     }
 
     @Override
-    public void create(GiftCertificate certificate) {
+    public Optional<GiftCertificate> create(GiftCertificate certificate) {
         try {
             jdbcTemplate.update(CREATE_QUERY,
                     certificate.getName(),
@@ -44,24 +45,26 @@ public class GiftCertificateDAOImpl extends AbstractDAO<GiftCertificate> impleme
                     LocalDateTime.now(),
                     LocalDateTime.now(),
                     certificate.getDuration());
+
+            return Optional.ofNullable(jdbcTemplate.queryForObject(FIND_BY_NAME_QUERY, mapper, certificate.getName()));
         } catch (DuplicateKeyException e) {
-            throw new DAOException("GiftCertificate with this data already exists!");
+            throw new DAOException("GiftCertificate with this name already exists!");
         } catch (DataAccessException e) {
             throw new DAOException(e);
         }
     }
 
     @Override
-    public List<GiftCertificate> findAll() {
+    public Optional<List<GiftCertificate>> findAll() {
         try {
-            return jdbcTemplate.query(FIND_ALL_QUERY, mapper);
+            return Optional.of(jdbcTemplate.query(FIND_ALL_QUERY, mapper));
         } catch (DataAccessException e) {
             throw new DAOException(e);
         }
     }
 
     @Override
-    public void update(GiftCertificate certificate) {
+    public Optional<GiftCertificate> update(GiftCertificate certificate) {
         try {
             jdbcTemplate.update(UPDATE_QUERY,
                     certificate.getName(),
@@ -70,6 +73,10 @@ public class GiftCertificateDAOImpl extends AbstractDAO<GiftCertificate> impleme
                     LocalDateTime.now(),
                     certificate.getDuration(),
                     certificate.getId());
+
+            return Optional.ofNullable(jdbcTemplate.queryForObject(FIND_BY_ID, mapper, certificate.getId()));
+        } catch (IncorrectResultSizeDataAccessException e) {
+            return Optional.empty();
         } catch (DataAccessException e) {
             throw new DAOException(e);
         }
@@ -85,34 +92,34 @@ public class GiftCertificateDAOImpl extends AbstractDAO<GiftCertificate> impleme
     }
 
     @Override
-    public GiftCertificate findById(int id) {
+    public Optional<GiftCertificate> findById(int id) {
         try {
-            return jdbcTemplate.queryForObject(FIND_BY_ID, mapper, id);
+            return Optional.ofNullable(jdbcTemplate.queryForObject(FIND_BY_ID, mapper, id));
         } catch (IncorrectResultSizeDataAccessException e) {
-            return null;
+            return Optional.empty();
         } catch (DataAccessException e) {
             throw new DAOException(e);
         }
     }
 
     @Override
-    public GiftCertificate findByName(String name) {
+    public Optional<GiftCertificate> findByName(String name) {
         try {
-            return jdbcTemplate.queryForObject(FIND_BY_NAME_QUERY, mapper, name);
+            return Optional.ofNullable(jdbcTemplate.queryForObject(FIND_BY_NAME_QUERY, mapper, name));
         } catch (IncorrectResultSizeDataAccessException e) {
-            return null;
+            return Optional.empty();
         } catch (DataAccessException e) {
             throw new DAOException(e);
         }
     }
 
     @Override
-    public List<GiftCertificate> findBy(Map<String, String> params) {
+    public Optional<List<GiftCertificate>> findBy(Map<String, String> params) {
         try {
             Pair<String, Object[]> ready = buildQuery(params);
-            return jdbcTemplate.query(ready.getKey(), mapper, ready.getValue());
+            return Optional.of(jdbcTemplate.query(ready.getKey(), mapper, ready.getValue()));
         } catch (IncorrectResultSizeDataAccessException e) {
-            return null;
+            return Optional.empty();
         } catch (DataAccessException e) {
             throw new DAOException(e);
         }
@@ -127,9 +134,18 @@ public class GiftCertificateDAOImpl extends AbstractDAO<GiftCertificate> impleme
      *               ORDER - result order (ASC or DESC allowed. default = ASC)
      *               NAME - full or part of name for searching
      *               DESCRIPTION - full or part of description for searching
+     *               TAG_NAME - full or part of tag for searching
      * @return Map<String, Object [ ]> with key as a query
      * and value as params for query
      */
+
+    /**
+     * SELECT gift_certificate.name FROM gift_certificate
+     * JOIN  gift_certificate2tag  ON gift_certificate.id = gift_certificate2tag.gift_certificate_id
+     * WHERE gift_certificate.name LIKE '%%' AND WHERE gift_certificate.description LIKE '%%'
+     * JOIN  tag ON gift_certificate2tag.tag_id = tag.id AND tag.name = 'java' ORDER BY gift_certificate.name ASC;
+     */
+
     private Pair<String, Object[]> buildQuery(Map<String, String> params) {
         String sort = params.get(SORT);
         String order = params.getOrDefault(ORDER, "");

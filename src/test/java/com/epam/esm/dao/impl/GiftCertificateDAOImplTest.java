@@ -13,6 +13,7 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 class GiftCertificateDAOImplTest {
     private EmbeddedDatabase embeddedDatabase;
@@ -44,7 +45,9 @@ class GiftCertificateDAOImplTest {
         giftCertificate.setDuration(6);
 
         giftCertificateDAO.create(giftCertificate);
-        giftCertificate = giftCertificateDAO.findByName("ZhZh");
+        Optional<GiftCertificate> giftCertificate1 = giftCertificateDAO.findByName("ZhZh");
+        Assertions.assertTrue(giftCertificate1.isPresent());
+        giftCertificate = giftCertificate1.get();
 
         Assertions.assertNotNull(giftCertificate);
         Assertions.assertNotEquals(giftCertificate.getId(), 0);
@@ -56,20 +59,24 @@ class GiftCertificateDAOImplTest {
 
     @Test
     void findAll() {
-        Assertions.assertNotNull(giftCertificateDAO.findAll());
-        Assertions.assertEquals(3, giftCertificateDAO.findAll().size());
+        Assertions.assertTrue(giftCertificateDAO.findAll().isPresent());
+        Assertions.assertEquals(3, giftCertificateDAO.findAll().get().size());
     }
 
     @Test
     void update() {
-        GiftCertificate giftCertificate = giftCertificateDAO.findById(1);
+        Optional<GiftCertificate> certificate = giftCertificateDAO.findById(1);
+        Assertions.assertTrue(certificate.isPresent());
+        GiftCertificate giftCertificate = certificate.get();
         giftCertificate.setName("Zazazazaz");
         giftCertificate.setDescription("Eheheheh");
         giftCertificate.setPrice(2);
         giftCertificate.setDuration(4);
         giftCertificateDAO.update(giftCertificate);
 
-        GiftCertificate changed = giftCertificateDAO.findById(1);
+        Optional<GiftCertificate> chngd = giftCertificateDAO.findById(1);
+        Assertions.assertTrue(chngd.isPresent());
+        GiftCertificate changed = chngd.get();
         Assertions.assertNotNull(changed);
         Assertions.assertEquals(changed.getName(), "Zazazazaz");
         Assertions.assertEquals(changed.getDescription(), "Eheheheh");
@@ -85,14 +92,14 @@ class GiftCertificateDAOImplTest {
 
     @Test
     void findById() {
-        Assertions.assertNotNull(giftCertificateDAO.findById(1));
-        Assertions.assertNull(giftCertificateDAO.findById(88));
+        Assertions.assertTrue(giftCertificateDAO.findById(1).isPresent());
+        Assertions.assertFalse(giftCertificateDAO.findById(88).isPresent());
     }
 
     @Test
     void findByName() {
-        Assertions.assertNotNull(giftCertificateDAO.findByName("Cerf1"));
-        Assertions.assertNull(giftCertificateDAO.findByName("NonExistingCertificate"));
+        Assertions.assertTrue(giftCertificateDAO.findByName("Cerf1").isPresent());
+        Assertions.assertFalse(giftCertificateDAO.findByName("NonExistingCertificate").isPresent());
     }
 
     @Test
@@ -103,13 +110,16 @@ class GiftCertificateDAOImplTest {
         params.put("NAME", "Cerf");
         params.put("DESCRIPTION", "desc");
 
-        List<GiftCertificate> certificates = giftCertificateDAO.findBy(params);
+        Optional<List<GiftCertificate>> giftCertificates = giftCertificateDAO.findBy(params);
+        Assertions.assertTrue(giftCertificates.isPresent());
+        List<GiftCertificate> certificates = giftCertificates.get();
+
         Assertions.assertNotNull(certificates);
         Assertions.assertEquals(3, certificates.size());
 
-        Assertions.assertEquals(certificates.get(0).getName(),"Cerf1");
-        Assertions.assertEquals(certificates.get(0).getDescription(),"desc1");
-        Assertions.assertEquals(certificates.get(0).getPrice(),12.50);
-        Assertions.assertEquals(certificates.get(0).getDuration(),1);
+        Assertions.assertEquals(certificates.get(0).getName(), "Cerf1");
+        Assertions.assertEquals(certificates.get(0).getDescription(), "desc1");
+        Assertions.assertEquals(certificates.get(0).getPrice(), 12.50);
+        Assertions.assertEquals(certificates.get(0).getDuration(), 1);
     }
 }

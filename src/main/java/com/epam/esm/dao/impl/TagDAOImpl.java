@@ -12,9 +12,9 @@ import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Repository
 public class TagDAOImpl extends AbstractDAO<Tag> implements DAOInterface<Tag> {
@@ -31,9 +31,11 @@ public class TagDAOImpl extends AbstractDAO<Tag> implements DAOInterface<Tag> {
     }
 
     @Override
-    public void create(Tag tag) {
+    public Optional<Tag> create(Tag tag) {
         try {
             jdbcTemplate.update(CREATE_QUERY, tag.getName());
+
+            return Optional.ofNullable(jdbcTemplate.queryForObject(FIND_BY_NAME_QUERY, mapper, tag.getName()));
         } catch (DuplicateKeyException e) {
             throw new DAOException("Tag with this data already exists!");
         } catch (DataAccessException e) {
@@ -42,21 +44,21 @@ public class TagDAOImpl extends AbstractDAO<Tag> implements DAOInterface<Tag> {
     }
 
     @Override
-    public List<Tag> findAll() {
+    public Optional<List<Tag>> findAll() {
         try {
-            return jdbcTemplate.query(FIND_ALL_QUERY, mapper);
+            return Optional.of(jdbcTemplate.query(FIND_ALL_QUERY, mapper));
         } catch (DataAccessException e) {
             throw new DAOException(e);
         }
     }
 
     @Override
-    public List<Tag> findBy(Map<String, String> params) {
+    public Optional<List<Tag>> findBy(Map<String, String> params) {
         throw new UnsupportedOperationException("FindBy operation not supporting");
     }
 
     @Override
-    public void update(Tag tag) {
+    public Optional<Tag> update(Tag tag) {
         throw new UnsupportedOperationException("Update operation not supporting");
     }
 
@@ -69,33 +71,33 @@ public class TagDAOImpl extends AbstractDAO<Tag> implements DAOInterface<Tag> {
         }
     }
 
-    public List<Tag> findByCertificateId(int id) {
+    public Optional<List<Tag>> findByCertificateId(int id) {
         try {
-            return jdbcTemplate.query(FIND_BY_CERTIFICATE_ID_QUERY, mapper, id);
+            return Optional.of(jdbcTemplate.query(FIND_BY_CERTIFICATE_ID_QUERY, mapper, id));
         } catch (IncorrectResultSizeDataAccessException e) {
-            return new ArrayList<>();
+            return Optional.empty();
         } catch (DataAccessException e) {
             throw new DAOException(e);
         }
     }
 
     @Override
-    public Tag findById(int id) {
+    public Optional<Tag> findById(int id) {
         try {
-            return jdbcTemplate.queryForObject(FIND_BY_TAG_ID_QUERY, mapper, id);
+            return Optional.ofNullable(jdbcTemplate.queryForObject(FIND_BY_TAG_ID_QUERY, mapper, id));
         } catch (IncorrectResultSizeDataAccessException e) {
-            return null;
+            return Optional.empty();
         } catch (DataAccessException e) {
             throw new DAOException(e);
         }
     }
 
     @Override
-    public Tag findByName(String name) {
+    public Optional<Tag> findByName(String name) {
         try {
-            return jdbcTemplate.queryForObject(FIND_BY_NAME_QUERY, mapper, name);
+            return Optional.ofNullable(jdbcTemplate.queryForObject(FIND_BY_NAME_QUERY, mapper, name));
         } catch (IncorrectResultSizeDataAccessException e) {
-            return null;
+            return Optional.empty();
         } catch (DataAccessException e) {
             throw new DAOException(e);
         }
