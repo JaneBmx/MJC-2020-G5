@@ -2,3 +2,6 @@
 /out/
 *.iml
 /target/
+/src/main/java/com/epam/esm/config/TestJdbc.java
+
+/logs/
