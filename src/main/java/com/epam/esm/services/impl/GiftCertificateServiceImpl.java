@@ -64,7 +64,6 @@ public class GiftCertificateServiceImpl implements ServiceInterface<GiftCertific
     @Override
     public List<GiftCertificate> getBy(Map<String, String> params) {
         Optional<List<GiftCertificate>> certificates = giftCertificateDAO.findBy(params);
-
         if (!certificates.isPresent()) {
             return new ArrayList<>();
         }

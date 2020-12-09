@@ -75,7 +75,6 @@ public class TagServiceImpl implements ServiceInterface<Tag> {
     public List<Tag> getBy(Map<String, String> params) {
         String name = Optional.of(params.get("name")).orElseThrow(()
                 -> new RequestParamsNotValidException("Tag not found. Empty tag name"));
-
         Tag tag = tagDao.findByName(params.get("name")).orElseThrow(()
                 -> new ItemNotFoundException(String.format("Tag with name %s not found!", name))
         );
