@@ -1,5 +1,6 @@
 package com.epam.esm.controller.error;
 
+import com.epam.esm.exception.DAOException;
 import com.epam.esm.exception.ItemNotFoundException;
 import com.epam.esm.exception.RequestParamsNotValidException;
 import com.epam.esm.exception.ServiceException;
@@ -14,6 +15,7 @@ public class AppRestExceptionHandler {
     private static final int REQUEST_PARAMS_NOT_VALID = 100400;
     private static final int SERVER_ERR = 100500;
     private static final int COMMON_ERR = 666;
+    private static final int DB_ERR = 777;
 
     @ExceptionHandler
     public ResponseEntity<ErrorResponse> handleTagNotFoundException(ItemNotFoundException e) {
@@ -38,6 +40,15 @@ public class AppRestExceptionHandler {
         ErrorResponse errorResponse = new ErrorResponse();
         errorResponse.setMessage(e.getMessage());
         errorResponse.setCode(SERVER_ERR);
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<ErrorResponse> handleTagNotFoundException(DAOException e) {
+        ErrorResponse errorResponse = new ErrorResponse();
+        errorResponse.setMessage(e.getMessage());
+        errorResponse.setCode(DB_ERR);
 
         return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
     }

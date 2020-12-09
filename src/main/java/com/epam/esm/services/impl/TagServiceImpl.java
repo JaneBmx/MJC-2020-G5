@@ -30,23 +30,15 @@ public class TagServiceImpl implements ServiceInterface<Tag> {
     @Override
     @Transactional
     public List<Tag> getAll() {
-        try {
-            return tagDao.findAll().orElse(new ArrayList<>());
-        } catch (DAOException e) {
-            throw new ServiceException(e);
-        }
+        return tagDao.findAll().orElse(new ArrayList<>());
     }
 
     @Override
     @Transactional
     public Tag getById(int id) {
-        try {
-            return tagDao.findById(id).orElseThrow(()
-                    -> new ItemNotFoundException(String.format("Tag with id %d not found.", id))
-            );
-        } catch (DAOException e) {
-            throw new ServiceException(e);
-        }
+        return tagDao.findById(id).orElseThrow(()
+                -> new ItemNotFoundException(String.format("Tag with id %d not found.", id))
+        );
     }
 
     @Override
@@ -57,53 +49,37 @@ public class TagServiceImpl implements ServiceInterface<Tag> {
     @Override
     @Transactional
     public void delete(int id) {
-        try {
-            Tag tag = tagDao.findById(id).orElseThrow(()
-                    -> new ItemNotFoundException(String.format("Tag with id %d not found.", id))
-            );
-            giftCertificateToTagDAO.deleteByTagId(tag.getId());
-            tagDao.delete(tag.getId());
-        } catch (DAOException e) {
-            throw new ServiceException(e);
-        }
+        Tag tag = tagDao.findById(id).orElseThrow(()
+                -> new ItemNotFoundException(String.format("Tag with id %d not found.", id))
+        );
+        giftCertificateToTagDAO.deleteByTagId(tag.getId());
+        tagDao.delete(tag.getId());
     }
 
     @Override
     public Tag create(Tag tag) {
-        try {
-            return tagDao.create(tag).orElseThrow(()
-                    -> new ServiceException("Tag wasn't created. Try again later.")
-            );
-        } catch (DAOException e) {
-            throw new ServiceException(e);
-        }
+        return tagDao.create(tag).orElseThrow(()
+                -> new ServiceException("Tag wasn't created. Try again later.")
+        );
     }
 
     @Override
     @Transactional(isolation = Isolation.READ_UNCOMMITTED)
     public Tag save(Tag tag) {
-        try {
-            return (tag.getId() == 0)
-                    ? create(tag)
-                    : update(tag);
-        } catch (DAOException e) {
-            throw new ServiceException(e);
-        }
+        return (tag.getId() == 0)
+                ? create(tag)
+                : update(tag);
     }
 
     @Override
     public List<Tag> getBy(Map<String, String> params) {
-        try {
-            String name = Optional.of(params.get("name")).orElseThrow(()
-                    -> new RequestParamsNotValidException("Tag not found. Empty tag name"));
+        String name = Optional.of(params.get("name")).orElseThrow(()
+                -> new RequestParamsNotValidException("Tag not found. Empty tag name"));
 
-            Tag tag = tagDao.findByName(params.get("name")).orElseThrow(()
-                    -> new ItemNotFoundException(String.format("Tag with name %s not found!", name))
-            );
+        Tag tag = tagDao.findByName(params.get("name")).orElseThrow(()
+                -> new ItemNotFoundException(String.format("Tag with name %s not found!", name))
+        );
 
-            return new ArrayList<>(Collections.singletonList(tag));
-        } catch (DAOException e) {
-            throw new ServiceException(e);
-        }
+        return new ArrayList<>(Collections.singletonList(tag));
     }
 }
