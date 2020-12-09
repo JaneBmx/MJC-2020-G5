@@ -53,101 +53,80 @@ public class GiftCertificateServiceImpl implements ServiceInterface<GiftCertific
     @Transactional
     @Override
     public GiftCertificate getById(int id) {
-        try {
-            GiftCertificate giftCertificate = giftCertificateDAO.findById(id).orElseThrow(()
-                    -> new ItemNotFoundException(String.format("Gift certificate with id %d not found!", id)));
-            giftCertificate.getTags().addAll(tagDAO.findByCertificateId(id).orElseGet(ArrayList::new));
+        GiftCertificate giftCertificate = giftCertificateDAO.findById(id).orElseThrow(()
+                -> new ItemNotFoundException(String.format("Gift certificate with id %d not found!", id)));
+        giftCertificate.getTags().addAll(tagDAO.findByCertificateId(id).orElseGet(ArrayList::new));
 
-            return giftCertificate;
-        } catch (DAOException e) {
-            throw new ServiceException(e);
-        }
+        return giftCertificate;
     }
 
     @Transactional
     @Override
     public List<GiftCertificate> getBy(Map<String, String> params) {
-        try {
-            Optional<List<GiftCertificate>> certificates = giftCertificateDAO.findBy(params);
-
-            if (!certificates.isPresent()) {
-                return new ArrayList<>();
-            }
-
-            List<GiftCertificate> giftCertificates = certificates.get();
-            giftCertificates.forEach(c -> {
-                Optional<List<Tag>> tags = tagDAO.findByCertificateId(c.getId());
-                c.getTags().addAll(tags.orElseGet(ArrayList::new));
-            });
-
-            return giftCertificates;
-        } catch (DAOException e) {
-            throw new ServiceException(e);
+        Optional<List<GiftCertificate>> certificates = giftCertificateDAO.findBy(params);
+        if (!certificates.isPresent()) {
+            return new ArrayList<>();
         }
+
+        List<GiftCertificate> giftCertificates = certificates.get();
+        giftCertificates.forEach(c -> {
+            Optional<List<Tag>> tags = tagDAO.findByCertificateId(c.getId());
+            c.getTags().addAll(tags.orElseGet(ArrayList::new));
+        });
+
+        return giftCertificates;
     }
 
     @Override
     @Transactional
     public GiftCertificate update(GiftCertificate certificate) {
-        try {
-            GiftCertificate oldGiftCertificate = giftCertificateDAO.findById(certificate.getId()).orElseThrow(()
-                    -> new ItemNotFoundException(String.format("Update failed. Gift certificate with id %d not found."
-                    , certificate.getId())));
+        GiftCertificate oldGiftCertificate = giftCertificateDAO.findById(certificate.getId()).orElseThrow(()
+                -> new ItemNotFoundException(String.format("Update failed. Gift certificate with id %d not found."
+                , certificate.getId())));
 
 
-            oldGiftCertificate
-                    = giftCertificateDAO.update(validateAndUpdateFields(oldGiftCertificate, certificate)).orElseThrow(()
-                    -> new ServiceException("Update failed. Try again later."));
+        oldGiftCertificate
+                = giftCertificateDAO.update(validateAndUpdateFields(oldGiftCertificate, certificate)).orElseThrow(()
+                -> new ServiceException("Update failed. Try again later."));
 
-            giftCertificateToTagDAO.deleteByGiftCertificateId(certificate.getId());
-            if (!certificate.getTags().isEmpty()) {
-                mapTagsToGiftCertificates(certificate.getTags(), oldGiftCertificate.getId());
-            }
-
-            oldGiftCertificate.setTags(new HashSet<>(tagDAO.findByCertificateId(oldGiftCertificate.getId())
-                    .orElse(new ArrayList<>())));
-
-            return oldGiftCertificate;
-        } catch (DAOException e) {
-            throw new ServiceException(e);
+        giftCertificateToTagDAO.deleteByGiftCertificateId(certificate.getId());
+        if (!certificate.getTags().isEmpty()) {
+            mapTagsToGiftCertificates(certificate.getTags(), oldGiftCertificate.getId());
         }
+
+        oldGiftCertificate.setTags(new HashSet<>(tagDAO.findByCertificateId(oldGiftCertificate.getId())
+                .orElse(new ArrayList<>())));
+
+        return oldGiftCertificate;
     }
 
     @Override
     @Transactional
     public void delete(int id) {
-        try {
-            GiftCertificate giftCertificate = giftCertificateDAO.findById(id).orElseThrow(()
-                    -> new ItemNotFoundException(
-                    String.format("Not deleted! GiftCertificate with id %d not found!", id)));
+        GiftCertificate giftCertificate = giftCertificateDAO.findById(id).orElseThrow(()
+                -> new ItemNotFoundException(
+                String.format("Not deleted! GiftCertificate with id %d not found!", id)));
 
-            giftCertificateToTagDAO.deleteByGiftCertificateId(giftCertificate.getId());
+        giftCertificateToTagDAO.deleteByGiftCertificateId(giftCertificate.getId());
 
-            giftCertificateDAO.delete(id);
-        } catch (DAOException e) {
-            throw new ServiceException(e);
-        }
+        giftCertificateDAO.delete(id);
     }
 
     @Override
     @Transactional(isolation = Isolation.READ_UNCOMMITTED)
     public GiftCertificate create(GiftCertificate giftCertificate) {
-        try {
-            GiftCertificate createdGiftCertificate = giftCertificateDAO.create(giftCertificate).orElseThrow(()
-                    -> new ServiceException("Can't create giftCertificate. Try again later."));
+        GiftCertificate createdGiftCertificate = giftCertificateDAO.create(giftCertificate).orElseThrow(()
+                -> new ServiceException("Can't create giftCertificate. Try again later."));
 
-            if (!giftCertificate.getTags().isEmpty()) {
-                mapTagsToGiftCertificates(giftCertificate.getTags(), createdGiftCertificate.getId());
-            }
-
-            createdGiftCertificate
-                    .setTags(new HashSet<>(tagDAO.findByCertificateId(createdGiftCertificate.getId())
-                            .orElse(new ArrayList<>())));
-
-            return createdGiftCertificate;
-        } catch (DAOException e) {
-            throw new ServiceException(e);
+        if (!giftCertificate.getTags().isEmpty()) {
+            mapTagsToGiftCertificates(giftCertificate.getTags(), createdGiftCertificate.getId());
         }
+
+        createdGiftCertificate
+                .setTags(new HashSet<>(tagDAO.findByCertificateId(createdGiftCertificate.getId())
+                        .orElse(new ArrayList<>())));
+
+        return createdGiftCertificate;
     }
 
     @Override

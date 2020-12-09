@@ -139,31 +139,31 @@ public class GiftCertificateDAOImpl extends AbstractDAO<GiftCertificate> impleme
      * and value as params for query
      */
 
-    /**
-     * SELECT gift_certificate.name FROM gift_certificate
-     * JOIN  gift_certificate2tag  ON gift_certificate.id = gift_certificate2tag.gift_certificate_id
-     * WHERE gift_certificate.name LIKE '%%' AND WHERE gift_certificate.description LIKE '%%'
-     * JOIN  tag ON gift_certificate2tag.tag_id = tag.id AND tag.name = 'java' ORDER BY gift_certificate.name ASC;
-     */
-
     private Pair<String, Object[]> buildQuery(Map<String, String> params) {
         String sort = params.get(SORT);
-        String order = params.getOrDefault(ORDER, "");
+        String order = params.getOrDefault(ORDER, "ASC");
         String name = params.getOrDefault(NAME, "");
         String description = params.getOrDefault(DESCRIPTION, "");
+        String tagName = params.getOrDefault(TAG_NAME, "");
 
-        List<String> paramsL = new ArrayList<>();
-        paramsL.add("%" + name + "%");
-        StringBuilder query = new StringBuilder("SELECT * FROM gift_certificate WHERE name like ? ");
+        List<String> queryParams = new ArrayList<>();
+        StringBuilder query = new StringBuilder("SELECT * FROM gift_certificate ");
 
-        if (description != null && !description.isEmpty()) {
-            query.append(" AND description LIKE ? ");
-            paramsL.add("%" + description + "%");
+        if (!tagName.isEmpty()) {
+            query.append(" JOIN  gift_certificate2tag  ON gift_certificate.id = gift_certificate2tag.gift_certificate_id ")
+                    .append(" JOIN  tag ON gift_certificate2tag.tag_id = tag.id AND tag.name LIKE ? ");
+            queryParams.add("%" + tagName + "%");
         }
+
+        query.append(" WHERE gift_certificate.name like ? ");
+        queryParams.add("%" + name + "%");
+
+        query.append(" AND description LIKE ? ");
+        queryParams.add("%" + description + "%");
 
         if (sort != null && !sort.isEmpty()) {
             if (sort.equalsIgnoreCase("name")) {
-                query.append(" ORDER BY name");
+                query.append(" ORDER BY name ");
             }
             if (sort.equalsIgnoreCase("create_date")) {
                 query.append(" ORDER BY create_date ");
@@ -171,6 +171,6 @@ public class GiftCertificateDAOImpl extends AbstractDAO<GiftCertificate> impleme
         }
         query.append(order);
 
-        return new Pair<>(query.toString(), paramsL.toArray());
+        return new Pair<>(query.toString(), queryParams.toArray());
     }
 }
