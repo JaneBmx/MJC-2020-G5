@@ -1,62 +1,66 @@
 package com.epam.esm.controller;
 
 import com.epam.esm.entity.GiftCertificate;
-import com.epam.esm.services.ServiceInterface;
+import com.epam.esm.pagination.Pagination;
+import com.epam.esm.services.impl.GiftCertificateService;
 import com.epam.esm.util.Fields;
-import com.epam.esm.validation.ValidationUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/certificates")
 public class GiftCertificateController {
-    private final ServiceInterface<GiftCertificate> service;
+    private final GiftCertificateService service;
+    private final String DEFAULT_SIZE = "20";
+    private final String DEFAULT_PAGE = "1";
+    private final String DEFAULT_SORT = "id";
+    private final String DEFAULT_SORT_MODE = "asc";
 
     @Autowired
-    public GiftCertificateController(ServiceInterface<GiftCertificate> service) {
+    public GiftCertificateController(GiftCertificateService service) {
         this.service = service;
     }
 
-    @GetMapping("/certificates")
-    public List<GiftCertificate> getGiftCertificates() {
-        return service.getAll();
-    }
-
-    @GetMapping("/certificates/{id}")
-    public GiftCertificate getById(@PathVariable int id) {
+    @GetMapping("/{id}")
+    public GiftCertificate one(@PathVariable int id) {
         return service.getById(id);
     }
 
-    @PostMapping("/certificates/")
-    public GiftCertificate add(@RequestBody GiftCertificate certificate) {
-        ValidationUtil.validate(certificate);
-        return service.save(certificate);
+    @GetMapping
+    public Pagination<GiftCertificate> all(@RequestParam(name = "page", required = false, defaultValue = DEFAULT_PAGE) int page,
+                                           @RequestParam(name = "size", required = false, defaultValue = DEFAULT_SIZE) int size,
+                                           @RequestParam(name = "sort", required = false, defaultValue = DEFAULT_SORT) String sort,
+                                           @RequestParam(name = "sort_mode", required = false, defaultValue = DEFAULT_SORT_MODE) String sortMode) {
+        return service.getAll(page, size, sort, sortMode);
     }
 
-    @PutMapping("/certificates/")
+    @GetMapping("/search")
+    public Pagination<GiftCertificate> getBy(@RequestParam(name = "page", required = false, defaultValue = DEFAULT_PAGE) int page,
+                                             @RequestParam(name = "size", required = false, defaultValue = DEFAULT_SIZE) int size,
+                                             @RequestParam(name = "sort", required = false, defaultValue = DEFAULT_SORT) String sort,
+                                             @RequestParam(name = "sort_mode", required = false, defaultValue = DEFAULT_SORT_MODE) String sortMode) {
+        //TODO
+        return null;
+    }
+
+    @PostMapping
+    public GiftCertificate add(@RequestBody GiftCertificate certificate) {
+        return service.create(certificate);
+    }
+
+    @PutMapping
     public GiftCertificate update(@RequestBody GiftCertificate certificate) {
         return service.update(certificate);
     }
 
-    @DeleteMapping("/certificates/{id}")
+    @DeleteMapping("/{id}")
     public String delete(@PathVariable int id) {
         service.delete(id);
 
-        return String.format("Gift certificate with id %d has been deleted", id);
-    }
-
-    @GetMapping("/certificates/find")
-    public List<GiftCertificate> findTags(@RequestParam(name = Fields.NAME, required = false) String name,
-                                          @RequestParam(name = Fields.SORT, required = false) String sort,
-                                          @RequestParam(name = Fields.SORT_TYPE, required = false) String sortType,
-                                          @RequestParam(name = Fields.DESCRIPTION, required = false) String description,
-                                          @RequestParam(name = Fields.ORDER, required = false) String order,
-                                          @RequestParam(name = Fields.TAG_NAME, required = false) String tagName) {
-        return service.getBy(mapParams(name, sort, sortType, description, order, tagName));
+        return "Deleted";
     }
 
     private Map<String, String> mapParams(String name, String sort, String sortType, String description, String order, String tagName) {
