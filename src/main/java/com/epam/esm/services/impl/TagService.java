@@ -27,12 +27,9 @@ public class TagService implements ServiceInterface<Tag> {
     @Override
     @Transactional
     public Tag getById(int id) {
-        Tag tag = tagDAO.getById(id);
-        if (tag == null) {
-            throw new ItemNotFoundException("Tag (id=" + id + ") not found");
-        }
-
-        return tag;
+        return tagDAO.getById(id).orElseThrow(()
+                -> new ItemNotFoundException(String.format("Tag id %d not found", id))
+        );
     }
 
     @Override
@@ -56,11 +53,11 @@ public class TagService implements ServiceInterface<Tag> {
         if (tag == null) {
             throw new RequestParamsNotValidException("Empty body");
         }
-        if(tag.getName() == null||tag.getName().trim().isEmpty()) {
+        if (tag.getName() == null || tag.getName().trim().isEmpty()) {
             throw new ServiceException("Name required");
         }
 
-        return tagDAO.save(tag);
+        return tagDAO.save(tag).orElse(null);
     }
 
     @Override
@@ -71,10 +68,10 @@ public class TagService implements ServiceInterface<Tag> {
     @Override
     @Transactional
     public void delete(int id) {
-        Tag tag = tagDAO.getById(id);
-        if (tag == null) {
-            throw new ItemNotFoundException("Tag (id=\" + id + \") not found");
-        }
+        Tag tag = tagDAO.getById(id).orElseThrow(()
+                -> new ItemNotFoundException(String.format("Tag id %d not found", id))
+        );
+
         tagDAO.delete(tag);
     }
 }

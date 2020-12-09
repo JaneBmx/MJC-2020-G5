@@ -29,12 +29,9 @@ public class GiftCertificateService implements ServiceInterface<GiftCertificate>
     @Transactional
     @Override
     public GiftCertificate getById(int id) {
-        GiftCertificate certificate = certificateDAO.getById(id);
-        if (certificate == null) {
-            throw new ItemNotFoundException("Gift certificate (id=" + id + ") not found");
-        }
-
-        return certificate;
+        return certificateDAO.getById(id).orElseThrow(()
+                -> new ItemNotFoundException(String.format("Gift certificate id %d not found", id))
+        );
     }
 
     @Transactional
@@ -57,6 +54,7 @@ public class GiftCertificateService implements ServiceInterface<GiftCertificate>
         if (giftCertificate == null) {
             throw new RequestParamsNotValidException("Empty body");
         }
+
         if (giftCertificate.getName() == null || giftCertificate.getName().trim().isEmpty()
                 || giftCertificate.getDescription() == null || giftCertificate.getDescription().trim().isEmpty()
                 || giftCertificate.getDuration() == 0 || giftCertificate.getPrice() == 0) {
@@ -64,7 +62,8 @@ public class GiftCertificateService implements ServiceInterface<GiftCertificate>
         }
         giftCertificate.setCreateDate(LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME));
         giftCertificate.setLastUpdateDate(LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME));
-        return certificateDAO.save(giftCertificate);
+
+        return certificateDAO.save(giftCertificate).orElse(null);
     }
 
     @Transactional
@@ -74,10 +73,9 @@ public class GiftCertificateService implements ServiceInterface<GiftCertificate>
             throw new ItemNotFoundException("Given gift certificate not found.");
         }
 
-        GiftCertificate oldCertificate = certificateDAO.getById(giftCertificate.getId());
-        if (oldCertificate == null) {
-            throw new ItemNotFoundException("Given gift certificate not found.");
-        }
+        GiftCertificate oldCertificate = certificateDAO.getById(giftCertificate.getId()).orElseThrow(()
+        ->new ItemNotFoundException("Given gift certificate not found.")
+        );
 
         boolean costOrDurationChanged = false;
         if (giftCertificate.getPrice() == 0) {
@@ -102,16 +100,16 @@ public class GiftCertificateService implements ServiceInterface<GiftCertificate>
         giftCertificate.setCreateDate(oldCertificate.getCreateDate());
         giftCertificate.setLastUpdateDate(LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME));
 
-        return certificateDAO.save(giftCertificate);
+        return certificateDAO.save(giftCertificate).orElse(null);
     }
 
     @Transactional
     @Override
     public void delete(int id) {
-        GiftCertificate certificate = certificateDAO.getById(id);
-        if (certificate == null) {
-            throw new ItemNotFoundException("certificate (id=\" + id + \") not found");
-        }
+        GiftCertificate certificate = certificateDAO.getById(id).orElseThrow(()
+                -> new ItemNotFoundException(String.format("Gift certificate id %d not found", id))
+        );
+
         certificateDAO.delete(certificate);
     }
 }

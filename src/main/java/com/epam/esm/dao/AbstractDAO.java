@@ -8,6 +8,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import java.io.Serializable;
 import java.util.Map;
+import java.util.Optional;
 
 public abstract class AbstractDAO<T extends Serializable> {
     @PersistenceContext
@@ -19,8 +20,8 @@ public abstract class AbstractDAO<T extends Serializable> {
         this.clazz = clazz;
     }
 
-    public T getById(int id) {
-        return entityManager.find(clazz, id);
+    public Optional<T> getById(int id) {
+        return Optional.ofNullable(entityManager.find(clazz, id));
     }
 
     public Pagination<T> getAll(Pagination<T> pagination, Pair<String, String> sortParams) {
@@ -70,8 +71,8 @@ public abstract class AbstractDAO<T extends Serializable> {
         return p;
     }
 
-    public T save(T t) {
-        return entityManager.merge(t);
+    public Optional<T> save(T t) {
+        return Optional.ofNullable(entityManager.merge(t));
     }
 
     public void delete(T t) {

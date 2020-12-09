@@ -1,6 +1,5 @@
 package com.epam.esm.entity.baseEntity;
 
-import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
 import java.util.Objects;
 

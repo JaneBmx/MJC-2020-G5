@@ -32,12 +32,9 @@ public class UserService implements ServiceInterface<User> {
     @Override
     @Transactional
     public User getById(int id) {
-        User user = userDAO.getById(id);
-        if (user == null) {
-            throw new ItemNotFoundException("User (id=" + id + ") not found");
-        }
-
-        return user;
+        return userDAO.getById(id).orElseThrow(()
+                -> new ItemNotFoundException(String.format("User id %d not found", id))
+        );
     }
 
     @Override
@@ -64,17 +61,17 @@ public class UserService implements ServiceInterface<User> {
 
     @Transactional
     public User addCertificate(GiftCertificate certificate, int id) {
-        if (certificate == null || !certificate.equals(certificateDAO.getById(certificate.getId()))) {
+        if (certificate == null || !certificate.equals(certificateDAO.getById(certificate.getId()).orElse(new GiftCertificate()))) {
             throw new ItemNotFoundException("Given certificate not found");
         }
-        User user = userDAO.getById(id);
-        if (user == null) {
-            throw new ItemNotFoundException("User (id=" + id + ") not found");
-        }
+        User user = userDAO.getById(id).orElseThrow(()
+                -> new ItemNotFoundException(String.format("User id %d not found", id))
+        );
+
         Order order = new Order(user, certificate, certificate.getPrice(), LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME));
         user.addOrder(order);
 
-        return userDAO.save(user);
+        return userDAO.save(user).orElse(null);
     }
 
     @Override
