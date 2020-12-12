@@ -34,7 +34,7 @@ public class TagService implements ServiceInterface<Tag> {
 
     @Override
     @Transactional
-    public Pagination<Tag> getAll(int size, int page, String sort, String sortMode) {
+    public Pagination<Tag> getAll(int page, int size, String sort, String sortMode) {
         return tagDAO.getAll(new Pagination<>(size, page, 0), new Pair<>(sort, sortMode));
     }
 

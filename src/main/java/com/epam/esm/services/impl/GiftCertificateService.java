@@ -37,7 +37,8 @@ public class GiftCertificateService implements ServiceInterface<GiftCertificate>
     @Transactional
     @Override
     public Pagination<GiftCertificate> getAll(int page, int size, String sort, String sortMode) {
-        return certificateDAO.getAll(new Pagination<>(size, page, 0), new Pair<>(sort, sortMode));
+        return certificateDAO.getAll(
+                new Pagination<>(size, page, 0), new Pair<>(sort, sortMode));
     }
 
     @Transactional
@@ -46,6 +47,61 @@ public class GiftCertificateService implements ServiceInterface<GiftCertificate>
                                              Pair<String, String> sortParams, int page, int size) {
         //TODO
         return null;
+    }
+
+    @Transactional
+    @Override
+    public GiftCertificate update(GiftCertificate newGiftCertificate) {
+        if (newGiftCertificate == null || newGiftCertificate.getId() == 0) {
+            throw new ItemNotFoundException("Given gift certificate not found.");
+        }
+
+        GiftCertificate oldCertificate = certificateDAO.getById(newGiftCertificate.getId()).orElseThrow(()
+                -> new ItemNotFoundException("Given gift certificate not found.")
+        );
+
+        return certificateDAO.save(validateAndUpdate(oldCertificate, newGiftCertificate)).orElse(null);
+    }
+
+    private GiftCertificate validateAndUpdate(GiftCertificate oldGiftCertificate, GiftCertificate newGiftCertificate) {
+        boolean costOrDurationChanged = false;
+        if (newGiftCertificate.getPrice() == 0) {
+            newGiftCertificate.setPrice(oldGiftCertificate.getPrice());
+        }
+
+        if (newGiftCertificate.getPrice() != oldGiftCertificate.getPrice()) {
+            costOrDurationChanged = true;
+        }
+        if (newGiftCertificate.getDuration() == 0) {
+            newGiftCertificate.setDuration(oldGiftCertificate.getDuration());
+        }
+        if (newGiftCertificate.getDuration() != oldGiftCertificate.getDuration() && costOrDurationChanged) {
+            throw new ServiceException("Price and duration can't be changed at the same time.");
+        }
+        if (newGiftCertificate.getName() == null || newGiftCertificate.getName().trim().isEmpty()) {
+            newGiftCertificate.setName(oldGiftCertificate.getName());
+        }
+        if (newGiftCertificate.getDescription() == null || newGiftCertificate.getDescription().trim().isEmpty()) {
+            newGiftCertificate.setDescription(oldGiftCertificate.getDescription());
+        }
+
+        newGiftCertificate.setCreateDate(oldGiftCertificate.getCreateDate());
+        newGiftCertificate.setLastUpdateDate(LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME));
+
+        //TODO
+        // ValidationUtil.validate(oldGiftCertificate);
+
+        return newGiftCertificate;
+    }
+
+    @Transactional
+    @Override
+    public void delete(int id) {
+        GiftCertificate certificate = certificateDAO.getById(id).orElseThrow(()
+                -> new ItemNotFoundException(String.format("Gift certificate id %d not found", id))
+        );
+
+        certificateDAO.delete(certificate);
     }
 
     @Transactional
@@ -64,52 +120,5 @@ public class GiftCertificateService implements ServiceInterface<GiftCertificate>
         giftCertificate.setLastUpdateDate(LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME));
 
         return certificateDAO.save(giftCertificate).orElse(null);
-    }
-
-    @Transactional
-    @Override
-    public GiftCertificate update(GiftCertificate giftCertificate) {
-        if (giftCertificate == null || giftCertificate.getId() == 0) {
-            throw new ItemNotFoundException("Given gift certificate not found.");
-        }
-
-        GiftCertificate oldCertificate = certificateDAO.getById(giftCertificate.getId()).orElseThrow(()
-        ->new ItemNotFoundException("Given gift certificate not found.")
-        );
-
-        boolean costOrDurationChanged = false;
-        if (giftCertificate.getPrice() == 0) {
-            giftCertificate.setPrice(oldCertificate.getPrice());
-        }
-        if (giftCertificate.getPrice() != oldCertificate.getPrice()) {
-            costOrDurationChanged = true;
-        }
-        if (giftCertificate.getDuration() == 0) {
-            giftCertificate.setDuration(oldCertificate.getDuration());
-        }
-        if (giftCertificate.getDuration() != oldCertificate.getDuration() && costOrDurationChanged) {
-            throw new ServiceException("Price and duration can't be changed at the same time.");
-        }
-        if (giftCertificate.getName() == null || giftCertificate.getName().trim().isEmpty()) {
-            giftCertificate.setName(oldCertificate.getName());
-        }
-        if (giftCertificate.getDescription() == null || giftCertificate.getDescription().trim().isEmpty()) {
-            giftCertificate.setDescription(oldCertificate.getDescription());
-        }
-
-        giftCertificate.setCreateDate(oldCertificate.getCreateDate());
-        giftCertificate.setLastUpdateDate(LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME));
-
-        return certificateDAO.save(giftCertificate).orElse(null);
-    }
-
-    @Transactional
-    @Override
-    public void delete(int id) {
-        GiftCertificate certificate = certificateDAO.getById(id).orElseThrow(()
-                -> new ItemNotFoundException(String.format("Gift certificate id %d not found", id))
-        );
-
-        certificateDAO.delete(certificate);
     }
 }
