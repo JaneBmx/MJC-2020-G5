@@ -10,9 +10,6 @@ public class Pagination<T> {
     private int currentPage;
     private long overallPages;
 
-    public Pagination() {
-    }
-
     public Pagination(int size, int currentPage, long overallRows) {
         this.size = size;
         this.currentPage = currentPage;
@@ -54,7 +51,7 @@ public class Pagination<T> {
 
     public void setOverallPages(long overallRows) {
         this.overallPages = overallRows / size;
-        if (overallRows % size != 0){
+        if (overallRows % size != 0) {
             this.overallPages++;
         }
     }
@@ -71,7 +68,7 @@ public class Pagination<T> {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Pagination)) return false;
-        Pagination<?> that = (Pagination<?>) o;
+        Pagination<T> that = (Pagination<T>) o;
 
         return getSize() == that.getSize() &&
                 getCurrentPage() == that.getCurrentPage() &&
@@ -86,7 +83,7 @@ public class Pagination<T> {
 
     @Override
     public String toString() {
-        return "Pagination{" + "content=" + content +
+        return "SuperExclusivePagination{" + "content=" + content +
                 ", size=" + size +
                 ", currentPage=" + currentPage +
                 ", totalPages=" + overallPages +

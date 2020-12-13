@@ -1,13 +1,11 @@
 package com.epam.esm.services.impl;
 
 import com.epam.esm.dao.GenericDAO;
-import com.epam.esm.entity.GiftCertificate;
 import com.epam.esm.entity.Tag;
 import com.epam.esm.exception.ItemNotFoundException;
 import com.epam.esm.exception.RequestParamsNotValidException;
 import com.epam.esm.pagination.Pagination;
 import javafx.util.Pair;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
