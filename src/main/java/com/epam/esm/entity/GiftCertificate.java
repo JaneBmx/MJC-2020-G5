@@ -3,6 +3,8 @@ package com.epam.esm.entity;
 import com.epam.esm.entity.baseEntity.NamedEntity;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -28,6 +30,16 @@ public class GiftCertificate extends NamedEntity {
     private Set<Tag> tags = new HashSet<>();
 
     public GiftCertificate() {
+    }
+
+    public GiftCertificate(String name, String description, double price, int duration) {
+        super(name);
+        this.description = description;
+        this.price = price;
+        this.duration = duration;
+        this.createDate = LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME);
+        this.lastUpdateDate = LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME);
+        this.tags = new HashSet<>();
     }
 
     public GiftCertificate(String name, String description, double price, String createDate, String lastUpdateDate,

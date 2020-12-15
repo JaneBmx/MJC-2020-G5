@@ -2,7 +2,10 @@ package com.epam.esm.entity;
 
 import com.epam.esm.entity.baseEntity.BaseEntity;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import javax.persistence.*;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
 @Entity
@@ -30,6 +33,15 @@ public class Order extends BaseEntity {
         this.cost = cost;
         this.purchaseDate = purchaseDate;
     }
+
+    public Order(User user, GiftCertificate giftCertificate) {
+        this.user = user;
+        this.giftCertificate = giftCertificate;
+        this.cost = giftCertificate.getPrice();
+        this.purchaseDate = LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME);
+        user.getOrders().add(this);
+    }
+
 
     public User getUser() {
         return user;
