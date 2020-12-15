@@ -1,12 +1,12 @@
 package com.epam.esm.services;
 
+import com.epam.esm.entity.baseEntity.BaseEntity;
 import com.epam.esm.pagination.Pagination;
 import javafx.util.Pair;
 
-import java.io.Serializable;
 import java.util.Map;
 
-public interface ServiceInterface<T extends Serializable> {
+public interface ServiceInterface<T extends BaseEntity> {
     T getById(int id);
 
     Pagination<T> getAll(int page, int size, String sort, String sortMode);

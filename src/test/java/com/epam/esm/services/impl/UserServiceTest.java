@@ -110,7 +110,7 @@ class UserServiceTest {
     @Test
     void addCertificate_withNotExistingCertificate() {
         Assertions.assertThrows(ItemNotFoundException.class, ()
-                -> service.addCertificate(null, 3));
+                -> service.addCertificate(5, 3));
     }
 
     @Test
@@ -122,7 +122,7 @@ class UserServiceTest {
         given(userGenericDAO.getById(1)).willReturn(Optional.empty());
 
         Assertions.assertThrows(ItemNotFoundException.class, ()
-                -> service.addCertificate(certificate, 1));
+                -> service.addCertificate(1, 1));
     }
 
     @Test
@@ -136,7 +136,7 @@ class UserServiceTest {
         given(userGenericDAO.save(user)).willReturn(
                 Optional.of(user));
 
-        User userWithAddedCertificate = service.addCertificate(certificate, user.getId());
+        User userWithAddedCertificate = service.addCertificate( user.getId(), certificate.getId());
 
         Assertions.assertNotNull(userWithAddedCertificate);
         Assertions.assertFalse(userWithAddedCertificate.getOrders().isEmpty());

@@ -12,6 +12,7 @@ import java.util.Set;
 @Entity
 @Table(name = "gift_certificate")
 public class GiftCertificate extends NamedEntity {
+    @Column(length = 512)
     private String description;
 
     private double price;

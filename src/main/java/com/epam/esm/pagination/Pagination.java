@@ -83,7 +83,7 @@ public class Pagination<T> {
 
     @Override
     public String toString() {
-        return "SuperExclusivePagination{" + "content=" + content +
+        return "Pagination{" + "content=" + content +
                 ", size=" + size +
                 ", currentPage=" + currentPage +
                 ", totalPages=" + overallPages +
