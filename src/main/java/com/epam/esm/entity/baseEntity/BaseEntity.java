@@ -1,5 +1,7 @@
 package com.epam.esm.entity.baseEntity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -26,6 +28,11 @@ public abstract class BaseEntity implements Serializable {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    @JsonIgnore
+    public boolean isNew() {
+        return id == null || id == 0;
     }
 
     @Override
