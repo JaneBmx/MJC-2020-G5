@@ -6,8 +6,7 @@ import com.epam.esm.entity.Tag;
 import com.epam.esm.model_assembler.impl.TagModelAssembler;
 import com.epam.esm.services.impl.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/tags")

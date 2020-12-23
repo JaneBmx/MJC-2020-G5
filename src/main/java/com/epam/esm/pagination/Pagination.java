@@ -13,20 +13,7 @@ public class Pagination<T> {
     public Pagination(int size, int currentPage, long overallRows) {
         this.size = size;
         this.currentPage = currentPage;
-        this.overallPages = overallRows / size;
-        if (overallRows % size != 0) {
-            this.overallPages++;
-        }
-    }
-
-    public Pagination(List<T> content, int size, int currentPage, long overallRows) {
-        this.size = size;
-        this.content = content;
-        this.currentPage = currentPage;
-        this.overallPages = overallRows / size;
-        if (overallRows % size != 0){
-            this.overallPages++;
-        }
+        this.overallPages = overallRows % size == 0 ? overallRows / size : (overallRows / size + 1);
     }
 
     public List<T> getContent() {
@@ -50,10 +37,7 @@ public class Pagination<T> {
     }
 
     public void setOverallPages(long overallRows) {
-        this.overallPages = overallRows / size;
-        if (overallRows % size != 0) {
-            this.overallPages++;
-        }
+        this.overallPages = overallRows % size == 0 ? overallRows / size : (overallRows / size + 1);
     }
 
     public int getSize() {
@@ -83,7 +67,7 @@ public class Pagination<T> {
 
     @Override
     public String toString() {
-        return "Pagination{" + "content=" + content +
+        return "SuperExclusivePagination{" + "content=" + content +
                 ", size=" + size +
                 ", currentPage=" + currentPage +
                 ", totalPages=" + overallPages +
