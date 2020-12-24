@@ -1,5 +1,6 @@
 package com.epam.esm.entity;
 
+import com.epam.esm.audit.AuditListener;
 import com.epam.esm.entity.baseEntity.NamedEntity;
 
 import javax.persistence.*;
@@ -9,6 +10,7 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
+@EntityListeners(AuditListener.class)
 @Entity
 @Table(name = "gift_certificate")
 public class GiftCertificate extends NamedEntity {

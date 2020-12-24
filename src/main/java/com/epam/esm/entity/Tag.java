@@ -1,9 +1,12 @@
 package com.epam.esm.entity;
 
+import com.epam.esm.audit.AuditListener;
 import com.epam.esm.entity.baseEntity.NamedEntity;
 import javax.persistence.Entity;
+import javax.persistence.EntityListeners;
 import javax.persistence.Table;
 
+@EntityListeners(AuditListener.class)
 @Entity
 @Table(name = "tag")
 public class Tag extends NamedEntity {

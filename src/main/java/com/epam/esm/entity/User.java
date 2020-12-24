@@ -1,5 +1,6 @@
 package com.epam.esm.entity;
 
+import com.epam.esm.audit.AuditListener;
 import com.epam.esm.entity.baseEntity.Person;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
@@ -8,6 +9,7 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
+@EntityListeners(AuditListener.class)
 @Entity
 @Table(name = "user")
 public class User extends Person {

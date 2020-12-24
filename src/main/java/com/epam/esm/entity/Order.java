@@ -1,5 +1,6 @@
 package com.epam.esm.entity;
 
+import com.epam.esm.audit.AuditListener;
 import com.epam.esm.entity.baseEntity.BaseEntity;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import javax.persistence.*;
@@ -7,6 +8,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
+@EntityListeners(AuditListener.class)
 @Entity
 @Table(name = "orders")
 public class Order extends BaseEntity {
