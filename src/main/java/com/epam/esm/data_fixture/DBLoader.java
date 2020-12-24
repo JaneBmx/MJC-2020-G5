@@ -1,6 +1,6 @@
 package com.epam.esm.data_fixture;
 
-import com.epam.esm.dao.GenericDAO;
+import com.epam.esm.dao.impl.GenericDAO;
 import com.epam.esm.entity.GiftCertificate;
 import com.epam.esm.entity.Order;
 import com.epam.esm.entity.Tag;
@@ -26,7 +26,7 @@ public class DBLoader implements ApplicationRunner {
     private final int USERS = 1000;
     private final int TAGS = 1000;
     private final int TAGS_PER_GC = 10;
-    private final int ORDERS_PER_USER = 10;
+    private final int ORDERS_PER_USER = 3;
     private final int GCS = TAGS * TAGS_PER_GC;
 
     @Autowired

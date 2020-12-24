@@ -1,18 +1,19 @@
 package com.epam.esm.services.impl;
 
-import com.epam.esm.dao.GenericDAO;
+import com.epam.esm.dao.impl.GenericDAO;
 import com.epam.esm.entity.Tag;
 import com.epam.esm.exception.ItemNotFoundException;
 import com.epam.esm.exception.RequestParamsNotValidException;
 import com.epam.esm.exception.ServiceException;
 import com.epam.esm.pagination.Pagination;
 import com.epam.esm.services.ServiceInterface;
+import com.epam.esm.util.Criteria;
 import javafx.util.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.Map;
+import java.util.List;
 
 @Service
 public class TagService implements ServiceInterface<Tag> {
@@ -40,11 +41,9 @@ public class TagService implements ServiceInterface<Tag> {
 
     @Override
     @Transactional
-    public Pagination<Tag> getBy(Map<String, Pair<String, String>> filterParams,
-                                 Pair<String, String> sortParams, int page, int size) {
-        //TODO search logic
-
-        return tagDAO.getBy(filterParams, sortParams, new Pagination<>(page, size, 0));
+    public Pagination<Tag> getBy(List<Criteria> criteria,
+                                 int page, int size, String sort, String sortMode) {
+        throw new UnsupportedOperationException("Search operation is not allowed for tag");
     }
 
     @Override

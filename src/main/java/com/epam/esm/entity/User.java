@@ -18,7 +18,6 @@ public class User extends Person {
         super(firstName, lastName);
     }
 
-
     public User(String firstName, String lastName, Set<Order> orders) {
         super(firstName, lastName);
         this.orders = orders;

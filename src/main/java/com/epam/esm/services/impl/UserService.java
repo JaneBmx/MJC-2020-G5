@@ -1,21 +1,21 @@
 package com.epam.esm.services.impl;
 
-import com.epam.esm.dao.GenericDAO;
+import com.epam.esm.dao.impl.GenericDAO;
 import com.epam.esm.entity.GiftCertificate;
 import com.epam.esm.entity.Order;
 import com.epam.esm.entity.User;
 import com.epam.esm.exception.ItemNotFoundException;
 import com.epam.esm.pagination.Pagination;
 import com.epam.esm.services.ServiceInterface;
+import com.epam.esm.util.Criteria;
 import javafx.util.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Map;
+import java.util.List;
 
 @Service
 public class UserService implements ServiceInterface<User> {
@@ -46,8 +46,8 @@ public class UserService implements ServiceInterface<User> {
 
     @Override
     @Transactional
-    public Pagination<User> getBy(Map<String, Pair<String, String>> filterParams, Pair<String, String> sortParams, int page, int size) {
-        return userDAO.getBy(filterParams, sortParams, new Pagination<>(page, size, 0));
+    public Pagination<User> getBy(List<Criteria> criteria, int page, int size, String sort, String sortMode) {
+        throw new UnsupportedOperationException("Search operation is not allowed for user");
     }
 
     @Override
@@ -61,12 +61,12 @@ public class UserService implements ServiceInterface<User> {
     }
 
     @Transactional
-    public User addCertificate(int userId, int gcId) {
-        GiftCertificate certificate = certificateDAO.getById(gcId)
-                .orElseThrow(() -> new ItemNotFoundException("Given certificate not found"));
-
-        User user = userDAO.getById(userId).orElseThrow(()
-                -> new ItemNotFoundException(String.format("User id %d not found", userId))
+    public User addCertificate(GiftCertificate certificate, int id) {
+        if (certificate == null || !certificate.equals(certificateDAO.getById(certificate.getId()).orElse(new GiftCertificate()))) {
+            throw new ItemNotFoundException("Given certificate not found");
+        }
+        User user = userDAO.getById(id).orElseThrow(()
+                -> new ItemNotFoundException(String.format("User id %d not found", id))
         );
 
         Order order = new Order(user, certificate, certificate.getPrice(), LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME));

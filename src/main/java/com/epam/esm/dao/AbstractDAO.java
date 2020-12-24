@@ -2,12 +2,13 @@ package com.epam.esm.dao;
 
 import com.epam.esm.entity.baseEntity.BaseEntity;
 import com.epam.esm.pagination.Pagination;
+import com.epam.esm.util.Criteria;
 import javafx.util.Pair;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
-import java.util.Map;
+import java.util.List;
 import java.util.Optional;
 
 public abstract class AbstractDAO<T extends BaseEntity> {
@@ -38,35 +39,33 @@ public abstract class AbstractDAO<T extends BaseEntity> {
         return pagination;
     }
 
-    public Pagination<T> getBy(Map<String, Pair<String, String>> filterParams, Pair<String,
-            String> sortParams, Pagination<T> p) {
+    public Pagination<T> getBy(List<Criteria> criteria, int page, int size, String sort, String sortMode) {
         StringBuilder queryBuilder = new StringBuilder("from " + clazz.getName() + " t");
-        if (!filterParams.isEmpty()) {
+        if (!criteria.isEmpty()) {
             queryBuilder.append(" where ");
-            filterParams.forEach((k, v) -> queryBuilder.
+            criteria.forEach(c -> queryBuilder.
                     append("t.").
-                    append(k).
-                    append(v.getValue()).
-                    append(v.getKey()).
+                    append(c.getKey()).
+                    append(" ").append(c.getOperator().getSign()).append(" ").
+                    append(c.getValue()).
                     append(" and "));
             queryBuilder.delete(queryBuilder.lastIndexOf(" and "), queryBuilder.length());
         }
 
-        if (sortParams != null) {
-            queryBuilder.
-                    append(" order by ").
-                    append(" t.").
-                    append(sortParams.getKey()).
-                    append(" ").
-                    append(sortParams.getValue());
-        }
+        queryBuilder.
+                append(" order by ").
+                append(" t.").
+                append(sort).
+                append(" ").
+                append(sortMode);
 
         Query query = entityManager.createQuery(queryBuilder.toString());
-        query.setFirstResult(p.getCurrentPage() * p.getSize()).setMaxResults(p.getSize());
+        query.setFirstResult(page * size).setMaxResults(size);
+        Pagination<T> p = new Pagination<>(size, page, 0);
         p.setContent(query.getResultList());
-
         queryBuilder.insert(0, "select count(t) ");
-        p.setOverallPages(entityManager.createQuery(queryBuilder.toString()).getFirstResult());
+        long a =(long) entityManager.createQuery(queryBuilder.toString()).getSingleResult();
+        p.setOverallPages(a);
 
         return p;
     }
@@ -74,12 +73,16 @@ public abstract class AbstractDAO<T extends BaseEntity> {
     public Optional<T> save(T t) {
         if (t.isNew()) {
             entityManager.persist(t);
-            return Optional.ofNullable(t);
+            return Optional.of(t);
         }
         return Optional.ofNullable(entityManager.merge(t));
     }
 
     public void delete(T t) {
         entityManager.remove(t);
+    }
+
+    public Class<T> getClazz() {
+        return clazz;
     }
 }

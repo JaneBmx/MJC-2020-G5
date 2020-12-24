@@ -2,17 +2,16 @@ package com.epam.esm.services;
 
 import com.epam.esm.entity.baseEntity.BaseEntity;
 import com.epam.esm.pagination.Pagination;
-import javafx.util.Pair;
+import com.epam.esm.util.Criteria;
 
-import java.util.Map;
+import java.util.List;
 
 public interface ServiceInterface<T extends BaseEntity> {
     T getById(int id);
 
     Pagination<T> getAll(int page, int size, String sort, String sortMode);
 
-    Pagination<T> getBy(Map<String, Pair<String, String>> filterParams,
-                        Pair<String, String> sortParams, int page, int size);
+    Pagination<T> getBy(List<Criteria> criteria, int page, int size, String sort, String sortMode);
 
     T create(T t);
 
