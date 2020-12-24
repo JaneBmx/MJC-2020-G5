@@ -1,13 +1,13 @@
 package com.epam.esm.services.impl;
 
-import com.epam.esm.dao.GenericDAO;
+import com.epam.esm.dao.impl.GenericDAO;
+import com.epam.esm.dao.impl.GiftCertificateDAO;
 import com.epam.esm.entity.GiftCertificate;
 import com.epam.esm.exception.ItemNotFoundException;
 import com.epam.esm.exception.RequestParamsNotValidException;
 import com.epam.esm.exception.ServiceException;
 import com.epam.esm.pagination.Pagination;
 import javafx.util.Pair;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -32,7 +32,7 @@ class GiftCertificateServiceTest {
     GiftCertificateService service;
 
     @Mock
-    GenericDAO<GiftCertificate> dao;
+    GiftCertificateDAO dao;
 
     @BeforeEach
     void setUp() {
@@ -67,7 +67,7 @@ class GiftCertificateServiceTest {
         Pagination<GiftCertificate> givenPagination = new Pagination<>(20, 1, 0);
 
         given(dao.getAll(givenPagination, new Pair<>("id", "asc")))
-                .willReturn(new Pagination<>(new ArrayList<>(), 20, 1, 21));
+                .willReturn(new Pagination<>(20, 1, 21));
 
         Pagination<GiftCertificate> returnedPagination = service.getAll(1, 20, "id", "asc");
 

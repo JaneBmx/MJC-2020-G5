@@ -1,6 +1,6 @@
 package com.epam.esm.services.impl;
 
-import com.epam.esm.dao.GenericDAO;
+import com.epam.esm.dao.impl.GenericDAO;
 import com.epam.esm.entity.Tag;
 import com.epam.esm.exception.ItemNotFoundException;
 import com.epam.esm.exception.RequestParamsNotValidException;
@@ -66,7 +66,7 @@ class TagServiceTest {
         Pagination<Tag> givenPagination = new Pagination<>(20, 1, 0);
 
         given(dao.getAll(givenPagination, new Pair<>("id", "asc")))
-                .willReturn(new Pagination<>(new ArrayList<>(), 20, 1, 21));
+                .willReturn(new Pagination<>( 20, 1, 21));
 
         Pagination<Tag> returnedPagination = service.getAll(1, 20, "id", "asc");
 

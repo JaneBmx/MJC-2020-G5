@@ -1,14 +1,12 @@
 package com.epam.esm.services.impl;
 
-import com.epam.esm.dao.GenericDAO;
+import com.epam.esm.dao.impl.GenericDAO;
 import com.epam.esm.entity.GiftCertificate;
 import com.epam.esm.entity.Order;
-import com.epam.esm.entity.Tag;
 import com.epam.esm.entity.User;
 import com.epam.esm.exception.ItemNotFoundException;
 import com.epam.esm.pagination.Pagination;
 import javafx.util.Pair;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,7 +18,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Optional;
 
@@ -72,7 +69,7 @@ class UserServiceTest {
         Pagination<User> givenPagination = new Pagination<>(20, 1, 0);
 
         given(userGenericDAO.getAll(givenPagination, new Pair<>("id", "asc")))
-                .willReturn(new Pagination<>(new ArrayList<>(), 20, 1, 21));
+                .willReturn(new Pagination<>(20, 1, 21));
 
         Pagination<User> returnedPagination = service.getAll(1, 20, "id", "asc");
 
@@ -110,7 +107,7 @@ class UserServiceTest {
     @Test
     void addCertificate_withNotExistingCertificate() {
         Assertions.assertThrows(ItemNotFoundException.class, ()
-                -> service.addCertificate(5, 3));
+                -> service.addCertificate(new GiftCertificate(1, "qwe", "asd", 12, null, null, 12, new HashSet<>()), 3));
     }
 
     @Test
@@ -122,7 +119,7 @@ class UserServiceTest {
         given(userGenericDAO.getById(1)).willReturn(Optional.empty());
 
         Assertions.assertThrows(ItemNotFoundException.class, ()
-                -> service.addCertificate(1, 1));
+                -> service.addCertificate(certificate, 1));
     }
 
     @Test
@@ -136,7 +133,7 @@ class UserServiceTest {
         given(userGenericDAO.save(user)).willReturn(
                 Optional.of(user));
 
-        User userWithAddedCertificate = service.addCertificate( user.getId(), certificate.getId());
+        User userWithAddedCertificate = service.addCertificate( certificate, certificate.getId());
 
         Assertions.assertNotNull(userWithAddedCertificate);
         Assertions.assertFalse(userWithAddedCertificate.getOrders().isEmpty());
