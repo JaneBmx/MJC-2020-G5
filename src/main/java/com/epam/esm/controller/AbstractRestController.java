@@ -1,6 +1,6 @@
 package com.epam.esm.controller;
 
-import com.epam.esm.entity.baseEntity.BaseEntity;
+import com.epam.esm.entity.base.BaseEntity;
 import com.epam.esm.exception.ItemNotFoundException;
 import com.epam.esm.pagination.Pagination;
 import com.epam.esm.pagination.RestPagination;
@@ -28,10 +28,10 @@ public abstract class AbstractRestController<T extends BaseEntity> {
     public static final String DEFAULT_PAGE = "1";
     public static final String DEFAULT_SORT = "id";
     public static final String DEFAULT_SORT_MODE = "asc";
-    public final String VALUE_OPERATOR_SPLITTER = ":";
-    public final Operator DEFAULT_OPERATOR = Operator.EQUAL;
+    public static final String VALUE_OPERATOR_SPLITTER = ":";
+    public static final Operator DEFAULT_OPERATOR = Operator.EQUAL;
 
-    public AbstractRestController(ServiceInterface<T> service, RepresentationModelAssembler<T, EntityModel<T>> assembler) {
+    protected AbstractRestController(ServiceInterface<T> service, RepresentationModelAssembler<T, EntityModel<T>> assembler) {
         this.service = service;
         this.assembler = assembler;
     }

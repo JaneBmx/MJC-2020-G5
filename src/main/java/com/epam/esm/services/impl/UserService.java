@@ -11,6 +11,7 @@ import com.epam.esm.util.Criteria;
 import javafx.util.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import sun.security.tools.keytool.CertAndKeyGen;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
@@ -61,15 +62,16 @@ public class UserService implements ServiceInterface<User> {
     }
 
     @Transactional
-    public User addCertificate(GiftCertificate certificate, int id) {
-        if (certificate == null || !certificate.equals(certificateDAO.getById(certificate.getId()).orElse(new GiftCertificate()))) {
-            throw new ItemNotFoundException("Given certificate not found");
-        }
-        User user = userDAO.getById(id).orElseThrow(()
-                -> new ItemNotFoundException(String.format("User id %d not found", id))
+    public User addCertificate(int userId, int giftCertificateId) {
+        User user = userDAO.getById(userId).orElseThrow(()
+                -> new ItemNotFoundException(String.format("User with id %d not found", userId))
         );
 
-        Order order = new Order(user, certificate, certificate.getPrice(), LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME));
+        GiftCertificate giftCertificate = certificateDAO.getById(giftCertificateId).orElseThrow(()
+                -> new ItemNotFoundException(String.format("GiftCertificate with id %d not found", userId))
+        );
+
+        Order order = new Order(user, giftCertificate, giftCertificate.getPrice(), LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME));
         user.addOrder(order);
 
         return userDAO.save(user).orElse(null);

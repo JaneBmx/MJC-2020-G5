@@ -1,4 +1,4 @@
-package com.epam.esm.entity.baseEntity;
+package com.epam.esm.entity.base;
 
 import javax.persistence.MappedSuperclass;
 import java.util.Objects;

@@ -1,7 +1,7 @@
 package com.epam.esm.model_assembler;
 
 import com.epam.esm.controller.RestHateoasController;
-import com.epam.esm.entity.baseEntity.BaseEntity;
+import com.epam.esm.entity.base.BaseEntity;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 
@@ -13,7 +13,6 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 public abstract class AbstractModelAssembler<T extends BaseEntity> {
-
     protected Class<? extends RestHateoasController<T>> controllerClass;
 
     public EntityModel<T> toModel(T entity) {

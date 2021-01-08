@@ -1,7 +1,7 @@
 package com.epam.esm.entity;
 
 import com.epam.esm.audit.AuditListener;
-import com.epam.esm.entity.baseEntity.BaseEntity;
+import com.epam.esm.entity.base.BaseEntity;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import javax.persistence.*;
 import java.time.LocalDateTime;

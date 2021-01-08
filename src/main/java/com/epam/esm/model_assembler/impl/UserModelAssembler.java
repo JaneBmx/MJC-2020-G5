@@ -8,9 +8,7 @@ import org.springframework.hateoas.server.RepresentationModelAssembler;
 import org.springframework.stereotype.Component;
 
 @Component
-public class UserModelAssembler extends AbstractModelAssembler<User>
-        implements RepresentationModelAssembler<User, EntityModel<User>> {
-
+public class UserModelAssembler extends AbstractModelAssembler<User> implements RepresentationModelAssembler<User, EntityModel<User>> {
     public UserModelAssembler() {
         super.setControllerClass(UserController.class);
     }

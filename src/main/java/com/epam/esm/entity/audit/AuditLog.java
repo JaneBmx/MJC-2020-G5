@@ -1,13 +1,12 @@
 package com.epam.esm.entity.audit;
 
-import com.epam.esm.entity.baseEntity.BaseEntity;
+import com.epam.esm.entity.base.BaseEntity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import java.time.LocalDateTime;
 import java.util.Objects;
-
 
 @Entity
 @Table(name = "audit_log")

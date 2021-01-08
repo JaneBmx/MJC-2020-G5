@@ -1,6 +1,6 @@
 package com.epam.esm.services;
 
-import com.epam.esm.entity.baseEntity.BaseEntity;
+import com.epam.esm.entity.base.BaseEntity;
 import com.epam.esm.pagination.Pagination;
 import com.epam.esm.util.Criteria;
 

@@ -8,9 +8,7 @@ import org.springframework.hateoas.server.RepresentationModelAssembler;
 import org.springframework.stereotype.Component;
 
 @Component
-public class TagModelAssembler extends AbstractModelAssembler<Tag>
-        implements RepresentationModelAssembler<Tag, EntityModel<Tag>> {
-
+public class TagModelAssembler extends AbstractModelAssembler<Tag> implements RepresentationModelAssembler<Tag, EntityModel<Tag>> {
     public TagModelAssembler() {
         super.setControllerClass(TagController.class);
     }

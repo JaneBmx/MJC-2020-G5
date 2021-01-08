@@ -1,7 +1,7 @@
 package com.epam.esm.entity;
 
 import com.epam.esm.audit.AuditListener;
-import com.epam.esm.entity.baseEntity.Person;
+import com.epam.esm.entity.base.Person;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import javax.persistence.*;

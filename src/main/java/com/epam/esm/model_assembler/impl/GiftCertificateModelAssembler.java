@@ -8,9 +8,7 @@ import org.springframework.hateoas.server.RepresentationModelAssembler;
 import org.springframework.stereotype.Component;
 
 @Component
-public class GiftCertificateModelAssembler extends AbstractModelAssembler<GiftCertificate>
-        implements RepresentationModelAssembler<GiftCertificate, EntityModel<GiftCertificate>> {
-
+public class GiftCertificateModelAssembler extends AbstractModelAssembler<GiftCertificate> implements RepresentationModelAssembler<GiftCertificate, EntityModel<GiftCertificate>> {
     public GiftCertificateModelAssembler() {
         super.setControllerClass(GiftCertificateController.class);
     }

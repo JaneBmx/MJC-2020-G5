@@ -16,7 +16,7 @@ public class AppRestExceptionHandler {
     private static final int COMMON_ERR = 666;
 
     @ExceptionHandler
-    public ResponseEntity<ErrorResponse> handleTagNotFoundException(ItemNotFoundException e) {
+    public ResponseEntity<ErrorResponse> handleException(ItemNotFoundException e) {
         ErrorResponse errorResponse = new ErrorResponse();
         errorResponse.setMessage(e.getMessage());
         errorResponse.setCode(ITEM_NOT_FOUND);
@@ -25,7 +25,7 @@ public class AppRestExceptionHandler {
     }
 
     @ExceptionHandler
-    public ResponseEntity<ErrorResponse> handleTagNotFoundException(RequestParamsNotValidException e) {
+    public ResponseEntity<ErrorResponse> handleException(RequestParamsNotValidException e) {
         ErrorResponse errorResponse = new ErrorResponse();
         errorResponse.setMessage(e.getMessage());
         errorResponse.setCode(REQUEST_PARAMS_NOT_VALID);
@@ -34,7 +34,7 @@ public class AppRestExceptionHandler {
     }
 
     @ExceptionHandler
-    public ResponseEntity<ErrorResponse> handleTagNotFoundException(ServiceException e) {
+    public ResponseEntity<ErrorResponse> handleException(ServiceException e) {
         ErrorResponse errorResponse = new ErrorResponse();
         errorResponse.setMessage(e.getMessage());
         errorResponse.setCode(SERVER_ERR);
@@ -43,7 +43,7 @@ public class AppRestExceptionHandler {
     }
 
     @ExceptionHandler
-    public ResponseEntity<ErrorResponse> handleAdd(Exception e) {
+    public ResponseEntity<ErrorResponse> handleException(Exception e) {
         ErrorResponse errorResponse = new ErrorResponse();
         errorResponse.setMessage(e.getMessage());
         errorResponse.setCode(COMMON_ERR);

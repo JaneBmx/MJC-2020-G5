@@ -1,10 +1,9 @@
 package com.epam.esm.dao;
 
-import com.epam.esm.entity.baseEntity.BaseEntity;
+import com.epam.esm.entity.base.BaseEntity;
 import com.epam.esm.pagination.Pagination;
 import com.epam.esm.util.Criteria;
 import javafx.util.Pair;
-
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
@@ -33,8 +32,8 @@ public abstract class AbstractDAO<T extends BaseEntity> {
                         setFirstResult((pagination.getCurrentPage() - 1) * pagination.getSize()).
                         setMaxResults(pagination.getSize()).
                         getResultList());
-        long a = (long) entityManager.createQuery("select count(t) from " + clazz.getName() + " t").getSingleResult();
-        pagination.setOverallPages(a);
+        long count = (long) entityManager.createQuery("select count(t) from " + clazz.getName() + " t").getSingleResult();
+        pagination.setOverallPages(count);
 
         return pagination;
     }
@@ -52,8 +51,7 @@ public abstract class AbstractDAO<T extends BaseEntity> {
             queryBuilder.delete(queryBuilder.lastIndexOf(" and "), queryBuilder.length());
         }
 
-        queryBuilder.
-                append(" order by ").
+        queryBuilder.append(" order by ").
                 append(" t.").
                 append(sort).
                 append(" ").
@@ -64,8 +62,8 @@ public abstract class AbstractDAO<T extends BaseEntity> {
         Pagination<T> p = new Pagination<>(size, page, 0);
         p.setContent(query.getResultList());
         queryBuilder.insert(0, "select count(t) ");
-        long a =(long) entityManager.createQuery(queryBuilder.toString()).getSingleResult();
-        p.setOverallPages(a);
+        long count = (long) entityManager.createQuery(queryBuilder.toString()).getSingleResult();
+        p.setOverallPages(count);
 
         return p;
     }

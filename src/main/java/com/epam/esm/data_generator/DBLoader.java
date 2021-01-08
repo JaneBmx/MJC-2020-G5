@@ -1,4 +1,4 @@
-package com.epam.esm.data_fixture;
+package com.epam.esm.data_generator;
 
 import com.epam.esm.dao.impl.GenericDAO;
 import com.epam.esm.entity.GiftCertificate;
@@ -23,11 +23,11 @@ public class DBLoader implements ApplicationRunner {
     private final GenericDAO<User> userDAO;
     private final GenericDAO<GiftCertificate> giftCertificateDAO;
     private final Faker faker = new Faker();
-    private final int USERS = 1000;
-    private final int TAGS = 1000;
-    private final int TAGS_PER_GC = 10;
-    private final int ORDERS_PER_USER = 3;
-    private final int GCS = TAGS * TAGS_PER_GC;
+    private static final int USERS = 1000;
+    private static final int TAGS = 1000;
+    private static final int TAGS_PER_GC = 10;
+    private static final int ORDERS_PER_USER = 3;
+    private static final int GCS = TAGS * TAGS_PER_GC;
 
     @Autowired
     public DBLoader(GenericDAO<Tag> tagDAO, GenericDAO<User> userDAO, GenericDAO<GiftCertificate> giftCertificateDAO) {

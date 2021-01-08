@@ -16,17 +16,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.util.ArrayList;
 import java.util.Optional;
-
 import static org.mockito.BDDMockito.given;
-
 
 @ExtendWith(MockitoExtension.class)
 @RunWith(JUnitPlatform.class)
 class TagServiceTest {
-
     @InjectMocks
     TagService service;
 
@@ -46,10 +41,10 @@ class TagServiceTest {
                 Optional.of(newTag)
         );
 
-        Tag crearedTag = service.getById(4);
+        Tag createdTag = service.getById(4);
 
-        Assertions.assertNotNull(crearedTag);
-        Assertions.assertEquals(newTag.getId(), crearedTag.getId());
+        Assertions.assertNotNull(createdTag);
+        Assertions.assertEquals(newTag.getId(), createdTag.getId());
     }
 
     @Test
@@ -71,14 +66,10 @@ class TagServiceTest {
         Pagination<Tag> returnedPagination = service.getAll(1, 20, "id", "asc");
 
         Assertions.assertNotNull(returnedPagination);
-        Assertions.assertEquals(givenPagination.getCurrentPage(), 1);
-        Assertions.assertEquals(givenPagination.getOverallPages(), 0);
-        Assertions.assertEquals(givenPagination.getContent().size(), 0);
-        Assertions.assertEquals(givenPagination.getSize(), 20);
-    }
-
-    @Test
-    void getBy() {
+        Assertions.assertEquals(1, givenPagination.getCurrentPage());
+        Assertions.assertEquals(0, givenPagination.getOverallPages());
+        Assertions.assertEquals(0, givenPagination.getContent().size());
+        Assertions.assertEquals(20, givenPagination.getSize());
     }
 
     @Test
@@ -96,7 +87,6 @@ class TagServiceTest {
     @Test
     void create_withNotValidParams() {
         Assertions.assertThrows(RequestParamsNotValidException.class, () -> service.create(null));
-
     }
 
     @Test
@@ -114,6 +104,5 @@ class TagServiceTest {
         );
 
         Assertions.assertThrows(ItemNotFoundException.class, () -> service.delete(4));
-
     }
 }

@@ -1,7 +1,7 @@
 package com.epam.esm.entity;
 
 import com.epam.esm.audit.AuditListener;
-import com.epam.esm.entity.baseEntity.NamedEntity;
+import com.epam.esm.entity.base.NamedEntity;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;

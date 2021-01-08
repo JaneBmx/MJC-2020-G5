@@ -2,7 +2,6 @@ package com.epam.esm.services.impl;
 
 import com.epam.esm.dao.impl.GenericDAO;
 import com.epam.esm.entity.GiftCertificate;
-import com.epam.esm.entity.Order;
 import com.epam.esm.entity.User;
 import com.epam.esm.exception.ItemNotFoundException;
 import com.epam.esm.pagination.Pagination;
@@ -26,7 +25,6 @@ import static org.mockito.BDDMockito.given;
 @ExtendWith(MockitoExtension.class)
 @RunWith(JUnitPlatform.class)
 class UserServiceTest {
-
     @InjectMocks
     UserService service;
 
@@ -74,28 +72,22 @@ class UserServiceTest {
         Pagination<User> returnedPagination = service.getAll(1, 20, "id", "asc");
 
         Assertions.assertNotNull(returnedPagination);
-        Assertions.assertEquals(givenPagination.getCurrentPage(), 1);
-        Assertions.assertEquals(givenPagination.getOverallPages(), 0);
-        Assertions.assertEquals(givenPagination.getContent().size(), 0);
-        Assertions.assertEquals(givenPagination.getSize(), 20);
-    }
-
-    @Test
-    void getBy() {
+        Assertions.assertEquals(1, givenPagination.getCurrentPage());
+        Assertions.assertEquals(0, givenPagination.getOverallPages());
+        Assertions.assertEquals(0, givenPagination.getContent().size());
+        Assertions.assertEquals(20, givenPagination.getSize());
     }
 
     @Test
     void create() {
         Assertions.assertThrows(UnsupportedOperationException.class, ()
                 -> service.create(new User("AAA", "HALP", new HashSet<>())));
-
     }
 
     @Test
     void update() {
         Assertions.assertThrows(UnsupportedOperationException.class, ()
                 -> service.update(new User(1, "AAA", "HALP", new HashSet<>())));
-
     }
 
     @Test
@@ -107,7 +99,7 @@ class UserServiceTest {
     @Test
     void addCertificate_withNotExistingCertificate() {
         Assertions.assertThrows(ItemNotFoundException.class, ()
-                -> service.addCertificate(new GiftCertificate(1, "qwe", "asd", 12, null, null, 12, new HashSet<>()), 3));
+                -> service.addCertificate(3, 3));
     }
 
     @Test
@@ -119,24 +111,6 @@ class UserServiceTest {
         given(userGenericDAO.getById(1)).willReturn(Optional.empty());
 
         Assertions.assertThrows(ItemNotFoundException.class, ()
-                -> service.addCertificate(certificate, 1));
-    }
-
-    @Test
-    void addCertificate() {
-        GiftCertificate certificate = new GiftCertificate(1, "qwe", "asd", 12, null, null, 12, new HashSet<>());
-        User user = new User(1, "heh", "meh", new HashSet<>());
-        given(giftCertificateGenericDAO.getById(1)).willReturn(Optional.of(certificate));
-        given(userGenericDAO.getById(1)).willReturn(Optional.of(user));
-
-        user.addOrder(new Order(user, certificate, certificate.getPrice(), null));
-        given(userGenericDAO.save(user)).willReturn(
-                Optional.of(user));
-
-        User userWithAddedCertificate = service.addCertificate( certificate, certificate.getId());
-
-        Assertions.assertNotNull(userWithAddedCertificate);
-        Assertions.assertFalse(userWithAddedCertificate.getOrders().isEmpty());
-        Assertions.assertTrue(user.getOrders().contains(new Order(user, certificate, certificate.getPrice(), null)));
+                -> service.addCertificate(1, 1));
     }
 }

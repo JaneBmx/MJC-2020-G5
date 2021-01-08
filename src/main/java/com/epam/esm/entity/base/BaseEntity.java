@@ -1,4 +1,4 @@
-package com.epam.esm.entity.baseEntity;
+package com.epam.esm.entity.base;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 

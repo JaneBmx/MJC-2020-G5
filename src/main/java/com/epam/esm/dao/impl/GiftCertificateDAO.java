@@ -18,7 +18,7 @@ public class GiftCertificateDAO extends AbstractDAO<GiftCertificate> implements 
         StringBuilder queryBuilder = new StringBuilder("from " + getClazz().getName() + " t");
         if (!criteria.isEmpty()) {
             queryBuilder.append(" where ");
-            Optional<Criteria> tagNameCriteria =Optional.ofNullable(criteria.stream().reduce(null,(acc, c) -> c.getKey().equalsIgnoreCase("tag_name") ? c : acc));
+            Optional<Criteria> tagNameCriteria = Optional.ofNullable(criteria.stream().reduce(null, (acc, c) -> c.getKey().equalsIgnoreCase("tag_name") ? c : acc));
             tagNameCriteria.ifPresent(criteria::remove);
             criteria.forEach(c -> queryBuilder
                     .append("t.")
@@ -29,13 +29,12 @@ public class GiftCertificateDAO extends AbstractDAO<GiftCertificate> implements 
             tagNameCriteria.ifPresent(c ->
                     queryBuilder
                             .append(String.format(" exists " +
-                            "(" +
-                            "    select gct.tag.id " +
-                            "    from %s gct " +
-                            "    join gct.tag gctt " +
-                            "    where " +
-                            "        t.id = gct.giftCertificate.id and (gctt.name = '%s')" +
-                            ") and ", GiftCertificate2tag.class.getName(), c.getValue())));
+                                    "(" +
+                                    "    select gct.tag.id " +
+                                    "    from %s gct " +
+                                    "    join gct.tag gctt " +
+                                    "    where t.id = gct.giftCertificate.id and (gctt.name = '%s')" +
+                                    ") and ", GiftCertificate2tag.class.getName(), c.getValue())));
             queryBuilder.delete(queryBuilder.lastIndexOf(" and "), queryBuilder.length());
         }
 
@@ -48,12 +47,12 @@ public class GiftCertificateDAO extends AbstractDAO<GiftCertificate> implements 
 
         Query query = entityManager.createQuery(queryBuilder.toString());
         query.setFirstResult(page * size).setMaxResults(size);
-        Pagination<GiftCertificate> p = new Pagination<>(size, page, 0);
-        p.setContent(query.getResultList());
+        Pagination<GiftCertificate> pagination = new Pagination<>(size, page, 0);
+        pagination.setContent(query.getResultList());
         queryBuilder.insert(0, "select count(t) ");
-        long a =(long) entityManager.createQuery(queryBuilder.toString()).getSingleResult();
-        p.setOverallPages(a);
+        long count = (long) entityManager.createQuery(queryBuilder.toString()).getSingleResult();
+        pagination.setOverallPages(count);
 
-        return p;
+        return pagination;
     }
 }

@@ -44,25 +44,7 @@ public class GiftCertificateService implements ServiceInterface<GiftCertificate>
     @Transactional
     @Override
     public Pagination<GiftCertificate> getBy(List<Criteria> criteria, int page, int size, String sort, String sortMode) {
-//        Optional<Criteria> tagNameCriteria = criteria.stream().reduce((acc, c) -> c.getKey().equalsIgnoreCase("tag_name") ? c : acc);
-//        tagNameCriteria.ifPresent(criteria::remove);
-        Pagination<GiftCertificate> p = certificateDAO.getBy(criteria, page, size, sort, sortMode);
-//        tagNameCriteria.ifPresent(value -> {
-//            p.setContent(p.getContent().stream()
-//                    .filter(c -> {
-//                        boolean flag = false;
-//                        for (Tag t : c.getTags()) {
-//                            if (t.getName().equalsIgnoreCase(value.getValue())) {
-//                                flag = true;
-//                                break;
-//                            }
-//                        }
-//                        return flag;
-//                    })
-//                    .collect(Collectors.toList()));
-//            p.setOverallPages(p.getContent().size() % p.getSize() == 0 ? p.getContent().size() / p.getSize() : p.getContent().size() / p.getSize() + 1);
-//        });
-        return p;
+        return certificateDAO.getBy(criteria, page, size, sort, sortMode);
     }
 
     @Transactional

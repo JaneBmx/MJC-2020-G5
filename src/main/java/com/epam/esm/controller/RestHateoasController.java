@@ -1,6 +1,6 @@
 package com.epam.esm.controller;
 
-import com.epam.esm.entity.baseEntity.BaseEntity;
+import com.epam.esm.entity.base.BaseEntity;
 import com.epam.esm.pagination.RestPagination;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.ResponseEntity;

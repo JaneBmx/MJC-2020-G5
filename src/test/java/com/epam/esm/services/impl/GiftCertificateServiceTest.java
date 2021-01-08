@@ -1,6 +1,5 @@
 package com.epam.esm.services.impl;
 
-import com.epam.esm.dao.impl.GenericDAO;
 import com.epam.esm.dao.impl.GiftCertificateDAO;
 import com.epam.esm.entity.GiftCertificate;
 import com.epam.esm.exception.ItemNotFoundException;
@@ -19,7 +18,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Optional;
 
@@ -72,10 +70,10 @@ class GiftCertificateServiceTest {
         Pagination<GiftCertificate> returnedPagination = service.getAll(1, 20, "id", "asc");
 
         Assertions.assertNotNull(returnedPagination);
-        Assertions.assertEquals(givenPagination.getCurrentPage(), 1);
-        Assertions.assertEquals(givenPagination.getOverallPages(), 0);
-        Assertions.assertEquals(givenPagination.getContent().size(), 0);
-        Assertions.assertEquals(givenPagination.getSize(), 20);
+        Assertions.assertEquals(1, givenPagination.getCurrentPage());
+        Assertions.assertEquals(0, givenPagination.getOverallPages());
+        Assertions.assertEquals(0, givenPagination.getContent().size());
+        Assertions.assertEquals(20, givenPagination.getSize());
     }
 
     @Test
@@ -87,10 +85,6 @@ class GiftCertificateServiceTest {
         );
 
         Assertions.assertThrows(ItemNotFoundException.class, () -> service.delete(4));
-    }
-
-    @Test
-    void getBy() {
     }
 
     @Test

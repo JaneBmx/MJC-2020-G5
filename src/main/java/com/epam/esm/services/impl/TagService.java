@@ -41,8 +41,7 @@ public class TagService implements ServiceInterface<Tag> {
 
     @Override
     @Transactional
-    public Pagination<Tag> getBy(List<Criteria> criteria,
-                                 int page, int size, String sort, String sortMode) {
+    public Pagination<Tag> getBy(List<Criteria> criteria, int page, int size, String sort, String sortMode) {
         throw new UnsupportedOperationException("Search operation is not allowed for tag");
     }
 
@@ -71,6 +70,10 @@ public class TagService implements ServiceInterface<Tag> {
                 -> new ItemNotFoundException(String.format("Tag id %d not found", id))
         );
 
-        tagDAO.delete(tag);
+        try{
+            tagDAO.delete(tag);
+        }catch (Exception ex){
+            throw new ServiceException("Tag can't be deleted. Already used in GiftCertificate");
+        }
     }
 }
