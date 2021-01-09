@@ -1,47 +1,70 @@
 package com.epam.esm.entity;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Positive;
+import com.epam.esm.audit.AuditListener;
+import com.epam.esm.entity.base.NamedEntity;
+
+import javax.persistence.*;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
-public class GiftCertificate {
-    private int id;
-
-    @NotBlank(message = "Name can't be empty")
-    private String name;
-
-    @NotBlank(message = "Description can't be empty")
+@EntityListeners(AuditListener.class)
+@Entity
+@Table(name = "gift_certificate")
+public class GiftCertificate extends NamedEntity {
+    @Column(length = 512)
     private String description;
 
-    @Positive(message = "Price should be positive")
     private double price;
 
     private String createDate;
 
     private String lastUpdateDate;
 
-    @Positive(message = "Duration should be positive")
     private int duration;
 
-    private Set<@NotNull Tag> tags = new HashSet<>();
+    @ManyToMany(fetch = FetchType.EAGER,
+            cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH})
+    @JoinTable(name = "gift_certificate2tag",
+            joinColumns = @JoinColumn(name = "gift_certificate_id"),
+            inverseJoinColumns = @JoinColumn(name = "tag_id"))
+    private Set<Tag> tags = new HashSet<>();
 
-    public int getId() {
-        return id;
+    public GiftCertificate() {
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public GiftCertificate(String name, String description, double price, int duration) {
+        super(name);
+        this.description = description;
+        this.price = price;
+        this.duration = duration;
+        this.createDate = LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME);
+        this.lastUpdateDate = LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME);
+        this.tags = new HashSet<>();
     }
 
-    public String getName() {
-        return name;
+    public GiftCertificate(String name, String description, double price, String createDate, String lastUpdateDate,
+                           int duration, Set<Tag> tags) {
+        super(name);
+        this.description = description;
+        this.price = price;
+        this.createDate = createDate;
+        this.lastUpdateDate = lastUpdateDate;
+        this.duration = duration;
+        this.tags = tags == null ? new HashSet<>() : tags;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public GiftCertificate(Integer id, String name, String description, double price, String createDate,
+                           String lastUpdateDate, int duration, Set<Tag> tags) {
+        super(id, name);
+        this.description = description;
+        this.price = price;
+        this.createDate = createDate;
+        this.lastUpdateDate = lastUpdateDate;
+        this.duration = duration;
+        this.tags = tags == null ? new HashSet<>() : tags;
     }
 
     public String getDescription() {
@@ -104,19 +127,34 @@ public class GiftCertificate {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof GiftCertificate)) return false;
+        if (!super.equals(o)) return false;
         GiftCertificate that = (GiftCertificate) o;
-        return id == that.id &&
-                Double.compare(that.price, price) == 0 &&
-                duration == that.duration &&
-                name.equals(that.name) &&
-                description.equals(that.description) &&
-                createDate.equals(that.createDate) &&
-                lastUpdateDate.equals(that.lastUpdateDate) &&
-                tags.equals(that.tags);
+
+        return Double.compare(that.getPrice(), getPrice()) == 0 &&
+                getDuration() == that.getDuration() &&
+                Objects.equals(getDescription(), that.getDescription()) &&
+                Objects.equals(getCreateDate(), that.getCreateDate()) &&
+                Objects.equals(getLastUpdateDate(), that.getLastUpdateDate()) &&
+                Objects.equals(getTags(), that.getTags());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, description, price, createDate, lastUpdateDate, duration, tags);
+        return Objects.hash(super.hashCode(), getDescription(), getPrice(), getCreateDate(), getLastUpdateDate(),
+                getDuration(), getTags());
+    }
+
+    @Override
+    public String toString() {
+        return "GiftCertificate{" +
+                "id=" + getId() +
+                ", name='" + getName() + '\'' +
+                ", description='" + description + '\'' +
+                ", price=" + price +
+                ", createDate='" + createDate + '\'' +
+                ", lastUpdateDate='" + lastUpdateDate + '\'' +
+                ", duration=" + duration +
+                ", tags=" + tags +
+                '}';
     }
 }

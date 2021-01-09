@@ -1,0 +1,79 @@
+package com.epam.esm.services.impl;
+
+import com.epam.esm.dao.impl.GenericDAO;
+import com.epam.esm.entity.Tag;
+import com.epam.esm.exception.ItemNotFoundException;
+import com.epam.esm.exception.RequestParamsNotValidException;
+import com.epam.esm.exception.ServiceException;
+import com.epam.esm.pagination.Pagination;
+import com.epam.esm.services.ServiceInterface;
+import com.epam.esm.util.Criteria;
+import javafx.util.Pair;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import javax.transaction.Transactional;
+import java.util.List;
+
+@Service
+public class TagService implements ServiceInterface<Tag> {
+    private final GenericDAO<Tag> tagDAO;
+
+    @Autowired
+    public TagService(GenericDAO<Tag> tagDAO) {
+        this.tagDAO = tagDAO;
+        this.tagDAO.setClazz(Tag.class);
+    }
+
+    @Override
+    @Transactional
+    public Tag getById(int id) {
+        return tagDAO.getById(id).orElseThrow(()
+                -> new ItemNotFoundException(String.format("Tag id %d not found", id))
+        );
+    }
+
+    @Override
+    @Transactional
+    public Pagination<Tag> getAll(int page, int size, String sort, String sortMode) {
+        return tagDAO.getAll(new Pagination<>(size, page, 0), new Pair<>(sort, sortMode));
+    }
+
+    @Override
+    @Transactional
+    public Pagination<Tag> getBy(List<Criteria> criteria, int page, int size, String sort, String sortMode) {
+        throw new UnsupportedOperationException("Search operation is not allowed for tag");
+    }
+
+    @Override
+    @Transactional
+    public Tag create(Tag tag) {
+        if (tag == null) {
+            throw new RequestParamsNotValidException("Empty body");
+        }
+        if (tag.getName() == null || tag.getName().trim().isEmpty()) {
+            throw new ServiceException("Name required");
+        }
+
+        return tagDAO.save(tag).orElse(null);
+    }
+
+    @Override
+    public Tag update(Tag tag) {
+        throw new UnsupportedOperationException("Update operation is not allowed for tag");
+    }
+
+    @Override
+    @Transactional
+    public void delete(int id) {
+        Tag tag = tagDAO.getById(id).orElseThrow(()
+                -> new ItemNotFoundException(String.format("Tag id %d not found", id))
+        );
+
+        try{
+            tagDAO.delete(tag);
+        }catch (Exception ex){
+            throw new ServiceException("Tag can't be deleted. Already used in GiftCertificate");
+        }
+    }
+}

@@ -1,49 +1,31 @@
 package com.epam.esm.entity;
 
-import javax.validation.constraints.NotBlank;
-import java.util.Objects;
+import com.epam.esm.audit.AuditListener;
+import com.epam.esm.entity.base.NamedEntity;
+import javax.persistence.Entity;
+import javax.persistence.EntityListeners;
+import javax.persistence.Table;
 
-public class Tag {
-    private int id;
-
-    @NotBlank(message = "Name can't be empty")
-    private String name;
-
+@EntityListeners(AuditListener.class)
+@Entity
+@Table(name = "tag")
+public class Tag extends NamedEntity {
     public Tag() {
     }
 
-    public Tag(int id, String name) {
-        this.id = id;
-        this.name = name;
+    public Tag(String name) {
+        super(name);
     }
 
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
+    public Tag(Integer id, String name) {
+        super(id, name);
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Tag)) return false;
-        Tag tag = (Tag) o;
-        return id == tag.id &&
-                name.equals(tag.name);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, name);
+    public String toString() {
+        return "Tag{" +
+                "id=" + getId() +
+                ", name='" + getName() + '\'' +
+                "}";
     }
 }
